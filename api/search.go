@@ -1,4 +1,4 @@
-package autocomplete
+package api
 
 import (
 	"bytes"
@@ -21,7 +21,7 @@ type Product struct {
 
 type Products []Product
 
-func Search(q string) Products {
+func Search(q string) (Products, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
@@ -108,9 +108,9 @@ func Search(q string) Products {
 
 	if err != nil {
 		log.Printf("error:%s", err)
+		return nil, err
 	}
 	//log.Printf("%+v", products)
 
-	return products
-
+	return products, nil
 }

@@ -1,4 +1,4 @@
-package autocomplete
+package api
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ type Suggestion struct {
 
 type Suggestions []Suggestion
 
-func Autocomplete(q string) Suggestions {
+func Autocomplete(q string) (Suggestions, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
@@ -79,9 +79,10 @@ func Autocomplete(q string) Suggestions {
 
 	if err != nil {
 		log.Printf("error:%s", err)
+		return nil, err
 	}
 	//log.Printf("%+v", products)
 
-	return suggestions
+	return suggestions, nil
 
 }
