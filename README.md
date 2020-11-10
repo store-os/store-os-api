@@ -47,7 +47,7 @@ Hit localhost:9000 in the browser to see the interface and enter http://elastics
 To enter index mapping and to explore new queries/options in Elasticsearch
 
 ```sh
-docker run --link <elasticsearch-container-id>:elasticsearch -p 5601:5601 --network localhost docker.elastic.co/kibana/kibana:7.6.1
+docker run --link 14833cb3405f:elasticsearch -p 5601:5601 --network localhost docker.elastic.co/kibana/kibana:7.6.1
 ```
 Hit localhost:5601 in the browser to enter Kibana
 
@@ -63,22 +63,22 @@ docker logs -f container_id
 
 ## Site Example 
 
-1. Index mapping
+1. Index Template
 ```sh
 curl \
   -H "Content-Type: application/json" \
-  -XPUT "http://localhost:9200/index" \
-  --data-binary "@./public/mapping.json"
+  -XPUT "http://localhost:9200/_template/search_template" \
+  --data-binary "@public/search_template.json"
 ```
 or using Kibana to insert the index mapping 
 
-2. Index data
+2. Index search data
 
 ```sh
-curl \
+ curl \
   -H "Content-Type: application/x-ndjson" \
-  -XPOST "http://localhost:9200/index/type/_bulk" \
-  --data-binary "@./public/test.json"
+  -XPOST "http://localhost:9200/index_search/_bulk" \
+  --data-binary "@public/test_search.json"
 ```
 3. Hit API 
 ```sh 
