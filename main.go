@@ -57,7 +57,7 @@ func main() {
 
 	c := controller.NewController()
 
-	v1 := r.Group("/v1")
+	v1 := r.Group("/api/v1")
 	{
 		search := v1.Group("/search")
 		{
@@ -66,6 +66,11 @@ func main() {
 		suggest := v1.Group("/suggest")
 		{
 			suggest.GET("", c.Autocomplete)
+		}
+		products := v1.Group("/products")
+		{
+			products.GET("", c.ListProducts)
+			products.GET(":id", c.OneProduct)
 		}
 		health := v1.Group("/health")
 		{

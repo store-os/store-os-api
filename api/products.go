@@ -10,7 +10,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func Autocomplete(q string) (Suggestions, error) {
+func ListProducts() (Products, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
@@ -20,21 +20,11 @@ func Autocomplete(q string) (Suggestions, error) {
 	// Build the request body.
 	var buf bytes.Buffer
 
-	log.Printf(q)
-
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
-			"multi_match": map[string]interface{}{
-				"query": q,
-				"type":  "bool_prefix",
-				"fields": []string{
-					"title",
-					"title._2gram",
-					"title._3gram",
-				},
-			},
+			"match_all": map[string]interface{}{},
 		},
-		"size": "3",
+		"size": "100",
 	}
 
 	//fmt.Println(query)
@@ -68,8 +58,8 @@ func Autocomplete(q string) (Suggestions, error) {
 	} else {
 		raw = []byte(result.Raw)
 	}
-	var suggestions Suggestions
-	err = json.Unmarshal([]byte(raw), &suggestions)
+	var products Products
+	err = json.Unmarshal([]byte(raw), &products)
 
 	if err != nil {
 		log.Printf("error:%s", err)
@@ -77,6 +67,34 @@ func Autocomplete(q string) (Suggestions, error) {
 	}
 	//log.Printf("%+v", products)
 
-	return suggestions, nil
+	return products, nil
+}
 
+func OneProduct(id string) (Product, error) {
+
+	es, err := elasticsearch.NewDefaultClient()
+	if err != nil {
+		log.Fatalf("Error creating the client: %s", err)
+	}
+
+	res, err := es.GetSource("index", id, es.GetSource.WithPretty())
+
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+
+	defer res.Body.Close()
+
+	jsonBody := read(res.Body)
+	//log.Printf(jsonBody)
+
+	var product Product
+	err = json.Unmarshal([]byte(jsonBody), &product)
+	//log.Printf("%+v", product)
+	if err != nil {
+		log.Printf("error:%s", err)
+		return product, err
+	}
+
+	return product, nil
 }
