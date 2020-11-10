@@ -3,6 +3,14 @@ API based in Go
 
 ## Usage
 
+### Keep it simple
+
+For those who wants keep it simple and avoid install a lot of things:
+
+```sh
+docker-compose up -d
+```
+
 ### Start using it
 1. Add comments to your API source code, [See Declarative Comments Format](https://swaggo.github.io/swaggo.io/declarative_comments_format/).
 2. Download [Swag](https://github.com/swaggo/swag) for Go by using:

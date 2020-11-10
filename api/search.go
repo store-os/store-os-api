@@ -107,7 +107,7 @@ func Search(q string) (Products, error) {
 				},
 			},
 		},
-		"size": "100",
+		"size": "20",
 	}
 
 	//fmt.Println(query)
