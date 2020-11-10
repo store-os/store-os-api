@@ -5,12 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"strconv"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/tidwall/gjson"
 )
 
-func ListProducts() (Products, error) {
+func ListProducts(page string) (Products, int64, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
@@ -20,11 +21,17 @@ func ListProducts() (Products, error) {
 	// Build the request body.
 	var buf bytes.Buffer
 
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		log.Fatalf("Error converting page", err)
+	}
+
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"match_all": map[string]interface{}{},
 		},
-		"size": "100",
+		"from": pageInt * size,
+		"size": size,
 	}
 
 	//fmt.Println(query)
@@ -61,13 +68,17 @@ func ListProducts() (Products, error) {
 	var products Products
 	err = json.Unmarshal([]byte(raw), &products)
 
+	hitsResult := gjson.Get(jsonBody, "hits.total.value")
+
+	hits := hitsResult.Int()
+
 	if err != nil {
 		log.Printf("error:%s", err)
-		return nil, err
+		return nil, 0, err
 	}
 	//log.Printf("%+v", products)
 
-	return products, nil
+	return products, hits, nil
 }
 
 func OneProduct(id string) (Product, error) {

@@ -5,14 +5,16 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"strconv"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/tidwall/gjson"
 )
 
-func Search(q string) (Products, error) {
+func Search(q string, page string) (Products, int64, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
+
 	if err != nil {
 		log.Fatalf("Error creating the client: %s", err)
 	}
@@ -48,6 +50,11 @@ func Search(q string) (Products, error) {
 		},
 	}
 
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		log.Fatalf("Error converting page", err)
+	}
+
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"bool": map[string]interface{}{
@@ -58,7 +65,8 @@ func Search(q string) (Products, error) {
 				},
 			},
 		},
-		"size": "20",
+		"from": pageInt * size,
+		"size": size,
 	}
 
 	//fmt.Println(query)
@@ -93,13 +101,18 @@ func Search(q string) (Products, error) {
 		raw = []byte(result.Raw)
 	}
 	var products Products
+
 	err = json.Unmarshal([]byte(raw), &products)
+
+	hitsResult := gjson.Get(jsonBody, "hits.total.value")
+
+	hits := hitsResult.Int()
 
 	if err != nil {
 		log.Printf("error:%s", err)
-		return nil, err
+		return nil, 0, err
 	}
 	//log.Printf("%+v", products)
 
-	return products, nil
+	return products, hits, nil
 }

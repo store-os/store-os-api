@@ -1,19 +1,126 @@
 basePath: /api/v1
 definitions:
-  api.Product:
+  api.Comment:
     properties:
-      category:
+      date:
         type: string
-      discount_price:
+      description:
+        type: string
+      int:
         type: integer
-      image:
+      name:
         type: string
-      link:
+      response:
         type: string
-      price:
-        type: integer
       title:
         type: string
+    type: object
+  api.Feature:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  api.Metadata:
+    properties:
+      equipment:
+        items:
+          type: string
+        type: array
+      features:
+        items:
+          $ref: '#/definitions/api.Feature'
+        type: array
+      specs:
+        items:
+          $ref: '#/definitions/api.Spec'
+        type: array
+      stocks:
+        items:
+          $ref: '#/definitions/api.Stock'
+        type: array
+    type: object
+  api.Product:
+    properties:
+      available:
+        description: Required
+        type: boolean
+      brand:
+        description: Optional, by default ""
+        type: string
+      category:
+        description: Optional, by default null
+        items:
+          type: string
+        type: array
+      comments:
+        description: Optional, by default null
+        items:
+          $ref: '#/definitions/api.Comment'
+        type: array
+      date:
+        description: Optional
+        type: string
+      description:
+        description: Required
+        type: string
+      discount_price:
+        description: Optional, by default 0
+        type: integer
+      gender:
+        description: Optional, by default ""
+        type: string
+      id:
+        description: Required
+        type: string
+      images:
+        description: Required
+        items:
+          type: string
+        type: array
+      metadata:
+        $ref: '#/definitions/api.Metadata'
+      mini_description:
+        description: Optional
+        type: string
+      price:
+        description: Optional
+        type: integer
+      rating:
+        description: Optional, by default null
+        items:
+          type: integer
+        type: array
+      ship_price:
+        description: Optional, by default 0
+        type: integer
+      subcategory:
+        description: Optional, by default null
+        items:
+          type: string
+        type: array
+      title:
+        description: Required
+        type: string
+    type: object
+  api.Spec:
+    properties:
+      measure:
+        type: string
+      spec:
+        type: string
+      value:
+        type: string
+    type: object
+  api.Stock:
+    properties:
+      color:
+        type: string
+      sizes:
+        items:
+          type: string
+        type: array
     type: object
   api.Suggestion:
     properties:
@@ -43,6 +150,76 @@ info:
   title: Swagger Store OS API
   version: "1.0"
 paths:
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: List products
+      parameters:
+      - description: paging number
+        format: page=1
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Products endpoint
+      tags:
+      - products
+  /products/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Products endpoint
+      tags:
+      - products
   /search:
     get:
       consumes:
@@ -50,9 +227,14 @@ paths:
       description: search query
       parameters:
       - description: name search by q
-        format: email
+        format: q
         in: query
         name: q
+        type: string
+      - description: paging number
+        format: page=1
+        in: query
+        name: page
         type: string
       produces:
       - application/json

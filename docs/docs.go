@@ -33,6 +33,112 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/products": {
+            "get": {
+                "description": "List products",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Products endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "page=1",
+                        "description": "paging number",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api.Product"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "description": "get product by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Products endpoint",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api.Product"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/search": {
             "get": {
                 "description": "search query",
@@ -49,9 +155,16 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "format": "email",
+                        "format": "q",
                         "description": "name search by q",
                         "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "page=1",
+                        "description": "paging number",
+                        "name": "page",
                         "in": "query"
                     }
                 ],
@@ -132,26 +245,181 @@ var doc = `{
         }
     },
     "definitions": {
-        "api.Product": {
+        "api.Comment": {
             "type": "object",
             "properties": {
-                "category": {
+                "date": {
                     "type": "string"
                 },
-                "discount_price": {
+                "description": {
+                    "type": "string"
+                },
+                "int": {
                     "type": "integer"
                 },
-                "image": {
+                "name": {
                     "type": "string"
                 },
-                "link": {
+                "response": {
                     "type": "string"
-                },
-                "price": {
-                    "type": "integer"
                 },
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "api.Feature": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.Metadata": {
+            "type": "object",
+            "properties": {
+                "equipment": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Feature"
+                    }
+                },
+                "specs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Spec"
+                    }
+                },
+                "stocks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Stock"
+                    }
+                }
+            }
+        },
+        "api.Product": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "description": "Required",
+                    "type": "boolean"
+                },
+                "brand": {
+                    "description": "Optional, by default \"\"",
+                    "type": "string"
+                },
+                "category": {
+                    "description": "Optional, by default null",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "comments": {
+                    "description": "Optional, by default null",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Comment"
+                    }
+                },
+                "date": {
+                    "description": "Optional",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Required",
+                    "type": "string"
+                },
+                "discount_price": {
+                    "description": "Optional, by default 0",
+                    "type": "integer"
+                },
+                "gender": {
+                    "description": "Optional, by default \"\"",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Required",
+                    "type": "string"
+                },
+                "images": {
+                    "description": "Required",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "metadata": {
+                    "$ref": "#/definitions/api.Metadata"
+                },
+                "mini_description": {
+                    "description": "Optional",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "Optional",
+                    "type": "integer"
+                },
+                "rating": {
+                    "description": "Optional, by default null",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "ship_price": {
+                    "description": "Optional, by default 0",
+                    "type": "integer"
+                },
+                "subcategory": {
+                    "description": "Optional, by default null",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "description": "Required",
+                    "type": "string"
+                }
+            }
+        },
+        "api.Spec": {
+            "type": "object",
+            "properties": {
+                "measure": {
+                    "type": "string"
+                },
+                "spec": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.Stock": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "sizes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

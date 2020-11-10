@@ -11,17 +11,23 @@ import (
 // Products godoc
 // @Summary Products endpoint
 // @Description List products
-// @Tags search
+// @Tags products
 // @Accept  json
 // @Produce  json
+// @Param page query string false "paging number" Format(page=1)
 // @Success 200 {array} api.Product
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError
 // @Failure 500 {object} httputil.HTTPError
 // @Router /products [get]
 func (c *Controller) ListProducts(ctx *gin.Context) {
+	page := ctx.Request.URL.Query().Get("page")
 
-	body, err := api.ListProducts()
+	if page == "" {
+		page = "0"
+	}
+
+	body, hits, err := api.ListProducts(page)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)
@@ -30,13 +36,14 @@ func (c *Controller) ListProducts(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"products": body,
+		"hits":     hits,
 	})
 }
 
 // Products godoc
 // @Summary Products endpoint
 // @Description get product by ID
-// @Tags search
+// @Tags products
 // @Accept  json
 // @Produce  json
 // @Param id path int true "Product ID"

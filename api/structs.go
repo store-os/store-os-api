@@ -1,5 +1,7 @@
 package api
 
+var size int = 20
+
 type Suggestion struct {
 	Title string `json:"title"`
 }
