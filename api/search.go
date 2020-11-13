@@ -11,18 +11,90 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func Search(q string, page string) (Products, int64, error) {
+func getAggs() map[string]interface{} {
+	availableAggs := aggsVariable("available", 2)
+	categoriesAggs := aggsVariable("category.keyword", 30)
+	subcategoriesAggs := aggsVariable("subcategory.keyword", 30)
+	brandAggs := aggsVariable("brand.keyword", 10)
+	genderAggs := aggsVariable("gender.keyword", 3)
 
-	es, err := elasticsearch.NewDefaultClient()
-
-	if err != nil {
-		log.Fatalf("Error creating the client: %s", err)
+	priceRangeAggs := map[string]interface{}{
+		"range": map[string]interface{}{
+			"field": "price",
+			"ranges": []map[string]interface{}{
+				{"from": 0.0, "to": 100.0, "key": "0 - 100"},
+				{"from": 101.0, "to": 500.0, "key": "101 - 500"},
+				{"from": 501.0, "to": 2500.0, "key": "501 - 2500"},
+				{"from": 2501.0, "to": 5000.0, "key": "2501 - 5000"},
+				{"from": 5001.0, "to": 10000.0, "key": "5001 - 10000"},
+				{"from": 100001.0, "to": 10000000.0, "key": "100001+"},
+			},
+		},
 	}
 
-	// Build the request body.
-	var buf bytes.Buffer
+	aggs := map[string]interface{}{
+		"available":     availableAggs,
+		"categories":    categoriesAggs,
+		"subcategories": subcategoriesAggs,
+		"brand":         brandAggs,
+		"gender":        genderAggs,
+		"price":         priceRangeAggs,
+	}
+	return aggs
+}
 
-	log.Printf(q)
+func aggsVariable(field string, size int) map[string]interface{} {
+	aggsQuery := map[string]interface{}{
+		"terms": map[string]interface{}{
+			"field": field,
+			"size":  size,
+		},
+	}
+	return aggsQuery
+}
+
+func filtersVariable(field string, value string) map[string]interface{} {
+	query := map[string]interface{}{
+		"term": map[string]interface{}{
+			field: map[string]interface{}{
+				"value": value,
+			},
+		},
+	}
+	return query
+}
+
+func matchAll() map[string]interface{} {
+	query := map[string]interface{}{
+		"match_all": map[string]interface{}{},
+	}
+	return query
+}
+
+func filtering(category string, subcategory string, q string) []map[string]interface{} {
+	query := []map[string]interface{}{}
+
+	subMap := map[string]interface{}{}
+	if category != "" {
+		subMap = filtersVariable("category.keyword", category)
+		query = append(query, subMap)
+	}
+
+	subMap = nil
+	if subcategory != "" {
+		subMap = filtersVariable("subcategory.keyword", subcategory)
+		query = append(query, subMap)
+	}
+	subMap = nil
+	if q == "" {
+		subMap = matchAll()
+		query = append(query, subMap)
+	}
+
+	return query
+}
+
+func getQuery(q string, category string, subcategory string) map[string]interface{} {
 
 	desc := map[string]interface{}{
 		"match_phrase": map[string]interface{}{
@@ -50,26 +122,63 @@ func Search(q string, page string) (Products, int64, error) {
 		},
 	}
 
+	should := map[string]interface{}{
+		"should": []map[string]interface{}{
+			desc,
+			ref,
+			tit,
+		},
+	}
+
+	filters := map[string]interface{}{
+		"must": filtering(category, subcategory, q),
+	}
+
+	for k, v := range should {
+		filters[k] = v
+	}
+
+	queryJSON := map[string]interface{}{}
+
+	boolQuery := map[string]interface{}{}
+
+	if (category != "") || (subcategory != "") || (q == "") {
+		boolQuery = filters
+	} else {
+		boolQuery = should
+	}
+	queryJSON = map[string]interface{}{
+		"bool": boolQuery,
+	}
+
+	return queryJSON
+}
+
+func Search(q string, page string, category string, subcategory string) (SearchResponse, error) {
+
+	es, err := elasticsearch.NewDefaultClient()
+
+	if err != nil {
+		log.Fatalf("Error creating the client: %s", err)
+	}
+
+	// Build the request body.
+	var buf bytes.Buffer
+
+	aggs := getAggs()
+	queryJSON := getQuery(q, category, subcategory)
+
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
 		log.Fatalf("Error converting page", err)
 	}
 
 	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"bool": map[string]interface{}{
-				"should": []map[string]interface{}{
-					desc,
-					ref,
-					tit,
-				},
-			},
-		},
-		"from": pageInt * size,
-		"size": size,
+		"query": queryJSON,
+		"aggs":  aggs,
+		"from":  pageInt * size,
+		"size":  size,
 	}
-
-	//fmt.Println(query)
 
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		log.Fatalf("Error encoding query: %s", err)
@@ -93,6 +202,10 @@ func Search(q string, page string) (Products, int64, error) {
 
 	result := gjson.Get(jsonBody, "hits.hits.#._source")
 
+	aggregations := gjson.Get(jsonBody, "aggregations")
+
+	hitsResult := gjson.Get(jsonBody, "hits.total.value")
+
 	var jsonByte []byte
 	var raw []byte
 	if result.Index > 0 {
@@ -100,19 +213,19 @@ func Search(q string, page string) (Products, int64, error) {
 	} else {
 		raw = []byte(result.Raw)
 	}
-	var products Products
+	var searchResponse SearchResponse
 
-	err = json.Unmarshal([]byte(raw), &products)
+	err = json.Unmarshal([]byte(aggregations.Raw), &searchResponse.Aggregations)
 
-	hitsResult := gjson.Get(jsonBody, "hits.total.value")
+	err = json.Unmarshal([]byte(raw), &searchResponse.Products)
 
-	hits := hitsResult.Int()
+	err = json.Unmarshal([]byte(hitsResult.Raw), &searchResponse.Hits)
 
 	if err != nil {
 		log.Printf("error:%s", err)
-		return nil, 0, err
+		return searchResponse, err
 	}
-	//log.Printf("%+v", products)
+	//log.Printf("%+v", searchResponse)
 
-	return products, hits, nil
+	return searchResponse, nil
 }

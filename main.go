@@ -59,17 +59,13 @@ func main() {
 
 	v1 := r.Group("/api/v1")
 	{
-		search := v1.Group("/search")
+		autocomplete := v1.Group("/autocomplete")
 		{
-			search.GET("", c.Search)
-		}
-		suggest := v1.Group("/suggest")
-		{
-			suggest.GET("", c.Autocomplete)
+			autocomplete.GET("", c.Autocomplete)
 		}
 		products := v1.Group("/products")
 		{
-			products.GET("", c.ListProducts)
+			products.GET("", c.Search)
 			products.GET(":id", c.OneProduct)
 		}
 		health := v1.Group("/health")

@@ -14,30 +14,37 @@ import (
 // @Tags products
 // @Accept  json
 // @Produce  json
+// @Param q query string false "name search by q" Format(q)
 // @Param page query string false "paging number" Format(page=1)
+// @Param category query string false "category filter" Format(category=)
+// @Param subcategory query string false "category filter" Format(subcategory=)
 // @Success 200 {array} api.Product
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError
 // @Failure 500 {object} httputil.HTTPError
 // @Router /products [get]
-func (c *Controller) ListProducts(ctx *gin.Context) {
+func (c *Controller) Search(ctx *gin.Context) {
+	q := ctx.Request.URL.Query().Get("q")
+
+	category := ctx.Request.URL.Query().Get("category")
+	subcategory := ctx.Request.URL.Query().Get("subcategory")
+
 	page := ctx.Request.URL.Query().Get("page")
 
 	if page == "" {
 		page = "0"
 	}
+	var body api.SearchResponse
+	var err error
 
-	body, hits, err := api.ListProducts(page)
+	body, err = api.Search(q, page, category, subcategory)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"products": body,
-		"hits":     hits,
-	})
+	ctx.JSON(http.StatusOK, body)
 }
 
 // Products godoc
