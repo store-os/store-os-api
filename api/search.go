@@ -13,8 +13,8 @@ import (
 
 func getAggs() map[string]interface{} {
 	availableAggs := aggsVariable("available", 2)
-	categoriesAggs := aggsVariable("category.keyword", 30)
-	subcategoriesAggs := aggsVariable("subcategory.keyword", 30)
+	categoriesAggs := aggsVariable("levels.category.keyword", 30)
+	subcategoriesAggs := aggsVariable("levels.subcategory.keyword", 30)
 	brandAggs := aggsVariable("brand.keyword", 10)
 	genderAggs := aggsVariable("gender.keyword", 3)
 
@@ -76,13 +76,13 @@ func filtering(category string, subcategory string, q string) []map[string]inter
 
 	subMap := map[string]interface{}{}
 	if category != "" {
-		subMap = filtersVariable("category.keyword", category)
+		subMap = filtersVariable("levels.category.keyword", category)
 		query = append(query, subMap)
 	}
 
 	subMap = nil
 	if subcategory != "" {
-		subMap = filtersVariable("subcategory.keyword", subcategory)
+		subMap = filtersVariable("levels.subcategory.keyword", subcategory)
 		query = append(query, subMap)
 	}
 	subMap = nil

@@ -35,6 +35,11 @@ type Comment struct {
 	Description string `json:"description"`
 	Response    string `json:"response"`
 }
+type Levels struct {
+	Category       []string `json:"category"`
+	SubCategory    []string `json:"subcategory"`
+	SubSubCategory []string `json:"subsubcategory"`
+}
 type Product struct {
 	Title           string    `json:"title"`            //Required Sortable | Relevance
 	Date            string    `json:"date"`             //Optional
@@ -50,8 +55,7 @@ type Product struct {
 	Gender          string    `json:"gender"`           //Optional, by default "" Facetable
 	Rating          []int     `json:"rating"`           //Optional, by default null
 	Comments        []Comment `json:"comments"`         //Optional, by default null
-	Category        []string  `json:"category"`         //Optional, by default null Facetable
-	Subcategory     []string  `json:"subcategory"`      //Optional, by default null Facetable
+	Levels          Levels    `json:"levels"`           //Optional, by default "" Facetable
 	Metadata        Metadata  `json:"metadata"`
 }
 
