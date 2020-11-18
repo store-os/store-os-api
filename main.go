@@ -68,6 +68,12 @@ func main() {
 			products.GET("", c.Search)
 			products.GET(":id", c.OneProduct)
 		}
+		posts := v1.Group("/blog")
+		{
+			posts.GET("", c.ListPosts)
+			posts.GET(":id", c.OnePost)
+		}
+
 		health := v1.Group("/health")
 		{
 			health.GET("", func(c *gin.Context) {
