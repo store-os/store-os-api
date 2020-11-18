@@ -9,6 +9,11 @@ For those who wants keep it simple and avoid install a lot of things:
 
 ```sh
 docker-compose up -d
+
+```
+### Windows
+```sh
+docker run -v "C:/Hugo/themes/store-os/store-os-api/public/curl.sh:/work/curl.sh" -v "C:/Hugo/themes/store-os/store-os-api/public/test_search.json:/work/test_search.json" -v "C:/Hugo/themes/store-os/store-os-api/public/test_blog.json:/work/test_blog.json" -v "C:/Hugo/themes/store-os/store-os-api/public/search_template.json:/work/search_template.json" -it "ellerbrock/alpine-bash-curl-ssl" sh
 ```
 
 ### Start using it
