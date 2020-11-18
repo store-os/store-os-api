@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 
@@ -13,34 +14,56 @@ import (
 
 func getAggs() map[string]interface{} {
 	availableAggs := aggsVariable("available", 2)
-	categoriesAggs := aggsVariable("levels.category.keyword", 30)
-	subcategoriesAggs := aggsVariable("levels.subcategory.keyword", 30)
+	categoriesAggs := composeAggsVariable("levels.category.keyword", "levels.subcategory.keyword", "levels.subsubcategory.keyword", 30)
+
 	brandAggs := aggsVariable("brand.keyword", 10)
 	genderAggs := aggsVariable("gender.keyword", 3)
-
-	priceRangeAggs := map[string]interface{}{
-		"range": map[string]interface{}{
+	minPrice := map[string]interface{}{
+		"min": map[string]interface{}{
 			"field": "price",
-			"ranges": []map[string]interface{}{
-				{"from": 0.0, "to": 100.0, "key": "0 - 100"},
-				{"from": 101.0, "to": 500.0, "key": "101 - 500"},
-				{"from": 501.0, "to": 2500.0, "key": "501 - 2500"},
-				{"from": 2501.0, "to": 5000.0, "key": "2501 - 5000"},
-				{"from": 5001.0, "to": 10000.0, "key": "5001 - 10000"},
-				{"from": 100001.0, "to": 10000000.0, "key": "100001+"},
-			},
+		},
+	}
+	maxPrice := map[string]interface{}{
+		"min": map[string]interface{}{
+			"field": "price",
 		},
 	}
 
 	aggs := map[string]interface{}{
-		"available":     availableAggs,
-		"categories":    categoriesAggs,
-		"subcategories": subcategoriesAggs,
-		"brand":         brandAggs,
-		"gender":        genderAggs,
-		"price":         priceRangeAggs,
+		"available":  availableAggs,
+		"categories": categoriesAggs,
+		"brand":      brandAggs,
+		"gender":     genderAggs,
+		"minPrice":   minPrice,
+		"maxPrice":   maxPrice,
 	}
 	return aggs
+}
+
+func composeAggsVariable(category string, subcategory string, subsubcategory string, size int) map[string]interface{} {
+	composeAggsVariable := map[string]interface{}{
+		"terms": map[string]interface{}{
+			"field": category,
+			"size":  size,
+		},
+		"aggs": map[string]interface{}{
+			"subcategories": map[string]interface{}{
+				"terms": map[string]interface{}{
+					"field": subcategory,
+					"size":  size,
+				},
+				"aggs": map[string]interface{}{
+					"subsubcategories": map[string]interface{}{
+						"terms": map[string]interface{}{
+							"field": subsubcategory,
+							"size":  size,
+						},
+					},
+				},
+			},
+		},
+	}
+	return composeAggsVariable
 }
 
 func aggsVariable(field string, size int) map[string]interface{} {
@@ -71,7 +94,7 @@ func matchAll() map[string]interface{} {
 	return query
 }
 
-func filtering(category string, subcategory string, q string) []map[string]interface{} {
+func filtering(category string, subcategory string, subsubcategory string, from string, to string, q string) []map[string]interface{} {
 	query := []map[string]interface{}{}
 
 	subMap := map[string]interface{}{}
@@ -86,6 +109,23 @@ func filtering(category string, subcategory string, q string) []map[string]inter
 		query = append(query, subMap)
 	}
 	subMap = nil
+	if subsubcategory != "" {
+		subMap = filtersVariable("levels.subsubcategory.keyword", subcategory)
+		query = append(query, subMap)
+	}
+	if (from != "") && (to != "") {
+		rangeQuery := map[string]interface{}{
+			"range": map[string]interface{}{
+				"price": map[string]interface{}{
+					"gte": from,
+					"lte": to,
+				},
+			},
+		}
+
+		query = append(query, rangeQuery)
+	}
+	subMap = nil
 	if q == "" {
 		subMap = matchAll()
 		query = append(query, subMap)
@@ -94,7 +134,20 @@ func filtering(category string, subcategory string, q string) []map[string]inter
 	return query
 }
 
-func getQuery(q string, category string, subcategory string) map[string]interface{} {
+func getSort(field string, order string) []map[string]interface{} {
+
+	sortShort := map[string]interface{}{
+		field: map[string]interface{}{
+			"order": order,
+		},
+	}
+	sort := []map[string]interface{}{
+		sortShort,
+	}
+	return sort
+}
+
+func getQuery(q string, category string, subcategory string, subsubcategory string, from string, to string) map[string]interface{} {
 
 	desc := map[string]interface{}{
 		"match_phrase": map[string]interface{}{
@@ -131,7 +184,7 @@ func getQuery(q string, category string, subcategory string) map[string]interfac
 	}
 
 	filters := map[string]interface{}{
-		"must": filtering(category, subcategory, q),
+		"must": filtering(category, subcategory, subsubcategory, from, to, q),
 	}
 
 	for k, v := range should {
@@ -142,11 +195,12 @@ func getQuery(q string, category string, subcategory string) map[string]interfac
 
 	boolQuery := map[string]interface{}{}
 
-	if (category != "") || (subcategory != "") || (q == "") {
+	if (category != "") || (subcategory != "") || (q == "") || (subsubcategory != "") || (from != "") || (to != "") {
 		boolQuery = filters
 	} else {
 		boolQuery = should
 	}
+
 	queryJSON = map[string]interface{}{
 		"bool": boolQuery,
 	}
@@ -154,7 +208,7 @@ func getQuery(q string, category string, subcategory string) map[string]interfac
 	return queryJSON
 }
 
-func Search(q string, page string, category string, subcategory string) (SearchResponse, error) {
+func Search(q string, page string, category string, subcategory string, subsubcategory string, fieldSort string, order string, from string, to string) (SearchResponse, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 
@@ -166,20 +220,23 @@ func Search(q string, page string, category string, subcategory string) (SearchR
 	var buf bytes.Buffer
 
 	aggs := getAggs()
-	queryJSON := getQuery(q, category, subcategory)
+	queryJSON := getQuery(q, category, subcategory, subsubcategory, from, to)
 
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
 		log.Fatalf("Error converting page", err)
 	}
 
+	sort := getSort(fieldSort, order)
+
 	query := map[string]interface{}{
 		"query": queryJSON,
 		"aggs":  aggs,
 		"from":  pageInt * size,
 		"size":  size,
+		"sort":  sort,
 	}
-
+	fmt.Println(query)
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		log.Fatalf("Error encoding query: %s", err)
 	}

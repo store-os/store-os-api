@@ -23,7 +23,7 @@ services:
   curl: 
     image: "ellerbrock/alpine-bash-curl-ssl"
     volumes:
-      - "C:/Hugo/themes/store-os/store-os-api:/work"
+      - "$PWD:/work"
     command:
       - "sh"
       - "/work/curl.sh"

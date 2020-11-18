@@ -28,16 +28,26 @@ func (c *Controller) Search(ctx *gin.Context) {
 
 	category := ctx.Request.URL.Query().Get("category")
 	subcategory := ctx.Request.URL.Query().Get("subcategory")
-
+	subsubcategory := ctx.Request.URL.Query().Get("subsubcategory")
+	fieldSort := ctx.Request.URL.Query().Get("fieldsort")
+	order := ctx.Request.URL.Query().Get("order")
+	from := ctx.Request.URL.Query().Get("from")
+	to := ctx.Request.URL.Query().Get("to")
 	page := ctx.Request.URL.Query().Get("page")
 
 	if page == "" {
 		page = "0"
 	}
+	if fieldSort == "" {
+		fieldSort = "mini_description.keyword"
+	}
+	if order == "" {
+		order = "desc"
+	}
 	var body api.SearchResponse
 	var err error
 
-	body, err = api.Search(q, page, category, subcategory)
+	body, err = api.Search(q, page, category, subcategory, subsubcategory, fieldSort, order, from, to)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)
