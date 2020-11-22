@@ -28,9 +28,9 @@ func Autocomplete(q string) (Suggestions, error) {
 				"query": q,
 				"type":  "bool_prefix",
 				"fields": []string{
-					"title",
-					"title._2gram",
-					"title._3gram",
+					"title.autocomplete",
+					"title.autocomplete._2gram",
+					"title.autocomplete._3gram",
 				},
 			},
 		},

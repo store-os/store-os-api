@@ -39,10 +39,10 @@ func (c *Controller) Search(ctx *gin.Context) {
 		page = "0"
 	}
 	if fieldSort == "" {
-		fieldSort = "mini_description.keyword"
+		fieldSort = "title.keyword"
 	}
 	if order == "" {
-		order = "desc"
+		order = "asc"
 	}
 	var body api.SearchResponse
 	var err error

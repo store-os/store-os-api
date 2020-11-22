@@ -47,12 +47,23 @@
               "discount_price": {
                 "type": "long"
               },
+              "final_price": {
+                "type": "long"
+              },
               "description": {
                 "type": "text", 
                 "analyzer": "spanish"
               },
               "title": {
-                "type": "search_as_you_type",
+                "type": "text",
+                "fields": {
+                  "autocomplete": {
+                    "type": "search_as_you_type"
+                  },
+                  "keyword": {
+                    "type": "keyword"
+                  }
+                },
                 "boost": 2
               }
             }

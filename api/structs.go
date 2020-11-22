@@ -50,7 +50,8 @@ type Product struct {
 	Available       bool      `json:"available"`        //Required Facetable
 	Price           int       `json:"price"`            //Optional Facetable range | Sortable
 	ShipPrice       int       `json:"ship_price"`       //Optional, by default 0
-	DiscountPrice   int       `json:"discount_price"`   //Optional, by default 0
+	Discount        int       `json:"discount"`         //Optional, by default 0
+	FinalPrice      int       `json:"final_price"`      //Optional
 	Brand           string    `json:"brand"`            //Optional, by default "" Facetable
 	Gender          string    `json:"gender"`           //Optional, by default "" Facetable
 	Rating          []int     `json:"rating"`           //Optional, by default null

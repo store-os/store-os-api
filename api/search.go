@@ -20,12 +20,12 @@ func getAggs() map[string]interface{} {
 	genderAggs := aggsVariable("gender.keyword", 3)
 	minPrice := map[string]interface{}{
 		"min": map[string]interface{}{
-			"field": "price",
+			"field": "final_price",
 		},
 	}
 	maxPrice := map[string]interface{}{
-		"min": map[string]interface{}{
-			"field": "price",
+		"max": map[string]interface{}{
+			"field": "final_price",
 		},
 	}
 
@@ -116,7 +116,7 @@ func filtering(category string, subcategory string, subsubcategory string, from 
 	if (from != "") && (to != "") {
 		rangeQuery := map[string]interface{}{
 			"range": map[string]interface{}{
-				"price": map[string]interface{}{
+				"final_price": map[string]interface{}{
 					"gte": from,
 					"lte": to,
 				},
