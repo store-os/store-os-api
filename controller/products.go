@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,9 +27,9 @@ import (
 func (c *Controller) Search(ctx *gin.Context) {
 	q := ctx.Request.URL.Query().Get("q")
 
-	category := ctx.Request.URL.Query().Get("category")
-	subcategory := ctx.Request.URL.Query().Get("subcategory")
-	subsubcategory := ctx.Request.URL.Query().Get("subsubcategory")
+	category, _ := ctx.Request.URL.Query()["category"]
+	subcategory := ctx.Request.URL.Query()["subcategory"]
+	subsubcategory := ctx.Request.URL.Query()["subsubcategory"]
 	fieldSort := ctx.Request.URL.Query().Get("fieldsort")
 	order := ctx.Request.URL.Query().Get("order")
 	from := ctx.Request.URL.Query().Get("from")
@@ -46,7 +47,7 @@ func (c *Controller) Search(ctx *gin.Context) {
 	}
 	var body api.SearchResponse
 	var err error
-
+	log.Println(category)
 	body, err = api.Search(q, page, category, subcategory, subsubcategory, fieldSort, order, from, to)
 
 	if err != nil {

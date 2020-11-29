@@ -75,12 +75,10 @@ func aggsVariable(field string, size int) map[string]interface{} {
 	return aggsQuery
 }
 
-func filtersVariable(field string, value string) map[string]interface{} {
+func filtersVariable(field string, value []string) map[string]interface{} {
 	query := map[string]interface{}{
-		"term": map[string]interface{}{
-			field: map[string]interface{}{
-				"value": value,
-			},
+		"terms": map[string]interface{}{
+			field: value,
 		},
 	}
 	return query
@@ -93,25 +91,28 @@ func matchAll() map[string]interface{} {
 	return query
 }
 
-func filtering(category string, subcategory string, subsubcategory string, from string, to string, q string) []map[string]interface{} {
+func filtering(category []string, subcategory []string, subsubcategory []string, from string, to string, q string) []map[string]interface{} {
 	query := []map[string]interface{}{}
 
 	subMap := map[string]interface{}{}
-	if category != "" {
+
+	if category != nil {
 		subMap = filtersVariable("levels.category.keyword", category)
 		query = append(query, subMap)
 	}
 
 	subMap = nil
-	if subcategory != "" {
+	if subcategory != nil {
 		subMap = filtersVariable("levels.subcategory.keyword", subcategory)
 		query = append(query, subMap)
 	}
+
 	subMap = nil
-	if subsubcategory != "" {
-		subMap = filtersVariable("levels.subsubcategory.keyword", subcategory)
+	if subsubcategory != nil {
+		subMap = filtersVariable("levels.subsubcategory.keyword", subsubcategory)
 		query = append(query, subMap)
 	}
+
 	if (from != "") && (to != "") {
 		rangeQuery := map[string]interface{}{
 			"range": map[string]interface{}{
@@ -146,7 +147,7 @@ func getSort(field string, order string) []map[string]interface{} {
 	return sort
 }
 
-func getQuery(q string, category string, subcategory string, subsubcategory string, from string, to string) map[string]interface{} {
+func getQuery(q string, category []string, subcategory []string, subsubcategory []string, from string, to string) map[string]interface{} {
 
 	desc := map[string]interface{}{
 		"match_phrase": map[string]interface{}{
@@ -194,7 +195,7 @@ func getQuery(q string, category string, subcategory string, subsubcategory stri
 
 	boolQuery := map[string]interface{}{}
 
-	if (category != "") || (subcategory != "") || (q == "") || (subsubcategory != "") || (from != "") || (to != "") {
+	if (category != nil) || (subcategory != nil) || (q == "") || (subsubcategory != nil) || (from != "") || (to != "") {
 		boolQuery = filters
 	} else {
 		boolQuery = should
@@ -207,7 +208,7 @@ func getQuery(q string, category string, subcategory string, subsubcategory stri
 	return queryJSON
 }
 
-func Search(q string, page string, category string, subcategory string, subsubcategory string, fieldSort string, order string, from string, to string) (SearchResponse, error) {
+func Search(q string, page string, category []string, subcategory []string, subsubcategory []string, fieldSort string, order string, from string, to string) (SearchResponse, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 

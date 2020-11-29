@@ -36,7 +36,7 @@ func (c *Controller) ListPosts(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"posts": body,
-		"hits":     hits,
+		"hits":  hits,
 	})
 }
 
