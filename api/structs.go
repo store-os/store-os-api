@@ -58,6 +58,7 @@ type Product struct {
 	Comments        []Comment `json:"comments"`         //Optional, by default null
 	Levels          Levels    `json:"levels"`           //Optional, by default "" Facetable
 	Metadata        Metadata  `json:"metadata"`
+	Url             string    `json:"url"`
 }
 
 type Products []Product

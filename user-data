@@ -1,0 +1,9 @@
+#!/bin/bash
+apt-get -y update 
+apt  install -y docker.io
+apt  install -y docker-compose
+mkdir /store-os
+cd /store-os
+git clone https://github.com/store-os/store-os-api.git
+cd store-os-api
+docker-compose up -d 
