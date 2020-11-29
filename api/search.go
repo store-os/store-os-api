@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"strconv"
 
@@ -236,7 +235,7 @@ func Search(q string, page string, category string, subcategory string, subsubca
 		"size":  size,
 		"sort":  sort,
 	}
-	fmt.Println(query)
+	//fmt.Println(query)
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		log.Fatalf("Error encoding query: %s", err)
 	}

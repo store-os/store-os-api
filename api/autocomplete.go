@@ -10,7 +10,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func Autocomplete(q string) (Suggestions, error) {
+func SearchAutocomplete(q string) (Autocompletes, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
@@ -68,8 +68,8 @@ func Autocomplete(q string) (Suggestions, error) {
 	} else {
 		raw = []byte(result.Raw)
 	}
-	var suggestions Suggestions
-	err = json.Unmarshal([]byte(raw), &suggestions)
+	var products Products
+	err = json.Unmarshal([]byte(raw), &products)
 
 	if err != nil {
 		log.Printf("error:%s", err)
@@ -77,6 +77,17 @@ func Autocomplete(q string) (Suggestions, error) {
 	}
 	//log.Printf("%+v", products)
 
-	return suggestions, nil
+	var autocompleteResponse Autocompletes
+
+	for _, value := range products {
+		var autocomplete Autocomplete
+
+		autocomplete.Title = value.Title
+		autocomplete.Image = value.Images[0]
+		autocompleteResponse = append(autocompleteResponse, autocomplete)
+
+	}
+
+	return autocompleteResponse, nil
 
 }

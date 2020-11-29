@@ -2,11 +2,12 @@ package api
 
 var size int = 20
 
-type Suggestion struct {
+type Autocomplete struct {
 	Title string `json:"title"`
+	Image string `json:"image"`
 }
 
-type Suggestions []Suggestion
+type Autocompletes []Autocomplete
 
 type Feature struct {
 	Description string `json:"description"`
@@ -68,6 +69,11 @@ type SearchResponse struct {
 	Aggregations map[string]interface{} `json:"aggregations"`
 	Hits         int                    `json:"hits"`
 }
+
+type AutocompleteResponse struct {
+	Autocomplete Autocompletes `json:"autocomplete"`
+}
+
 type Paragraph struct {
 	Header   string   `json:"header"`   //Optional
 	Content  string   `json:"content"`  //Required

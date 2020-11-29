@@ -24,7 +24,7 @@ func (c *Controller) Autocomplete(ctx *gin.Context) {
 
 	q := ctx.Request.URL.Query().Get("q")
 
-	body, err := api.Autocomplete(q)
+	body, err := api.SearchAutocomplete(q)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)
@@ -32,6 +32,6 @@ func (c *Controller) Autocomplete(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"suggestions": body,
+		"autocomplete": body,
 	})
 }
