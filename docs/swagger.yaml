@@ -1,5 +1,14 @@
 basePath: /api/v1
 definitions:
+  api.Autocomplete:
+    properties:
+      id:
+        type: string
+      image:
+        type: string
+      title:
+        type: string
+    type: object
   api.Comment:
     properties:
       date:
@@ -22,6 +31,21 @@ definitions:
       title:
         type: string
     type: object
+  api.Levels:
+    properties:
+      category:
+        items:
+          type: string
+        type: array
+      subcategory:
+        items:
+          type: string
+        type: array
+      subsubcategory:
+        items:
+          type: string
+        type: array
+    type: object
   api.Metadata:
     properties:
       equipment:
@@ -41,19 +65,80 @@ definitions:
           $ref: '#/definitions/api.Stock'
         type: array
     type: object
-  api.Product:
+  api.Paragraph:
     properties:
-      available:
+      content:
         description: Required
-        type: boolean
-      brand:
-        description: Optional, by default ""
         type: string
-      category:
-        description: Optional, by default null
+      header:
+        description: Optional
+        type: string
+      images:
+        description: Optional
         items:
           type: string
         type: array
+      position:
+        description: Image position regarding the text. (Top, Left, Right, Bottom)
+        type: string
+    type: object
+  api.Post:
+    properties:
+      author:
+        description: Optional
+        type: string
+      available:
+        description: Required (whether it currently is shown or not)
+        type: boolean
+      comments:
+        description: Optional, by default null
+        items:
+          $ref: '#/definitions/api.Comment'
+        type: array
+      date:
+        description: Required
+        type: string
+      description:
+        description: Required
+        type: string
+      id:
+        description: Required
+        type: string
+      images:
+        description: Required
+        items:
+          type: string
+        type: array
+      label:
+        description: Required
+        items:
+          type: string
+        type: array
+      paragraph:
+        description: Optional, by default null
+        items:
+          $ref: '#/definitions/api.Paragraph'
+        type: array
+      rating:
+        description: Optional, by default null
+        items:
+          type: integer
+        type: array
+      social:
+        $ref: '#/definitions/api.Social'
+        description: Optional
+      title:
+        description: Required
+        type: string
+    type: object
+  api.Product:
+    properties:
+      available:
+        description: Required Facetable
+        type: boolean
+      brand:
+        description: Optional, by default "" Facetable
+        type: string
       comments:
         description: Optional, by default null
         items:
@@ -65,11 +150,14 @@ definitions:
       description:
         description: Required
         type: string
-      discount_price:
+      discount:
         description: Optional, by default 0
         type: integer
+      final_price:
+        description: Optional
+        type: integer
       gender:
-        description: Optional, by default ""
+        description: Optional, by default "" Facetable
         type: string
       id:
         description: Required
@@ -79,13 +167,16 @@ definitions:
         items:
           type: string
         type: array
+      levels:
+        $ref: '#/definitions/api.Levels'
+        description: Optional, by default "" Facetable
       metadata:
         $ref: '#/definitions/api.Metadata'
       mini_description:
         description: Optional
         type: string
       price:
-        description: Optional
+        description: Optional Facetable range | Sortable
         type: integer
       rating:
         description: Optional, by default null
@@ -95,13 +186,22 @@ definitions:
       ship_price:
         description: Optional, by default 0
         type: integer
-      subcategory:
-        description: Optional, by default null
-        items:
-          type: string
-        type: array
       title:
-        description: Required
+        description: Required Sortable | Relevance
+        type: string
+      url:
+        type: string
+    type: object
+  api.Social:
+    properties:
+      facebook:
+        description: Optional
+        type: string
+      instagram:
+        description: Optional
+        type: string
+      linkedin:
+        description: Optional
         type: string
     type: object
   api.Spec:
@@ -116,16 +216,13 @@ definitions:
   api.Stock:
     properties:
       color:
+        description: Facetable
         type: string
       sizes:
+        description: Facetable
         items:
           type: string
         type: array
-    type: object
-  api.Suggestion:
-    properties:
-      title:
-        type: string
     type: object
   httputil.HTTPError:
     properties:
@@ -136,7 +233,7 @@ definitions:
         example: status bad request
         type: string
     type: object
-host: localhost:8080
+host: store-api.alchersan.com
 info:
   contact:
     email: support@swagger.io
@@ -150,16 +247,131 @@ info:
   title: Swagger Store OS API
   version: "1.0"
 paths:
+  /autocomplete:
+    get:
+      consumes:
+      - application/json
+      description: get autocomplete
+      parameters:
+      - description: name search by q
+        format: q
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.Autocomplete'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: List autocomplete
+      tags:
+      - autocomplete
+  /blog:
+    get:
+      consumes:
+      - application/json
+      description: List posts
+      parameters:
+      - description: paging number
+        format: page=1
+        in: query
+        name: page
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.Product'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Blog endpoint
+      tags:
+      - posts
   /products:
     get:
       consumes:
       - application/json
       description: List products
       parameters:
+      - description: name search by q
+        format: q
+        in: query
+        name: q
+        type: string
       - description: paging number
         format: page=1
         in: query
         name: page
+        type: string
+      - description: category filter
+        format: category=
+        in: query
+        name: category
+        type: string
+      - description: subcategory filter
+        format: subcategory=
+        in: query
+        name: subcategory
+        type: string
+      - description: subsubcategory filter
+        format: subsubcategory=
+        in: query
+        name: subsubcategory
+        type: string
+      - description: from price
+        format: from
+        in: query
+        name: from
+        type: integer
+      - description: to price
+        format: to
+        in: query
+        name: to
+        type: integer
+      - description: page number
+        format: page
+        in: query
+        name: page
+        type: integer
+      - description: fieldsort price or title.keyword
+        format: fieldsort
+        in: query
+        name: fieldsort
+        type: string
+      - description: order (asc or desc)
+        format: order
+        in: query
+        name: order
         type: string
       produces:
       - application/json
@@ -220,73 +432,6 @@ paths:
       summary: Products endpoint
       tags:
       - products
-  /search:
-    get:
-      consumes:
-      - application/json
-      description: search query
-      parameters:
-      - description: name search by q
-        format: q
-        in: query
-        name: q
-        type: string
-      - description: paging number
-        format: page=1
-        in: query
-        name: page
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/api.Product'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-      summary: Search endpoint
-      tags:
-      - search
-  /suggest:
-    get:
-      consumes:
-      - application/json
-      description: get autocomplete
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/api.Suggestion'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httputil.HTTPError'
-      summary: List autocomplete
-      tags:
-      - autocomplete
+schemes:
+- https
 swagger: "2.0"

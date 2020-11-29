@@ -15,7 +15,7 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param q query string false "name search by q" Format(q)
-// @Success 200 {array} api.Suggestion
+// @Success 200 {array} api.Autocomplete
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError
 // @Failure 500 {object} httputil.HTTPError

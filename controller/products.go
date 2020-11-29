@@ -18,7 +18,13 @@ import (
 // @Param q query string false "name search by q" Format(q)
 // @Param page query string false "paging number" Format(page=1)
 // @Param category query string false "category filter" Format(category=)
-// @Param subcategory query string false "category filter" Format(subcategory=)
+// @Param subcategory query string false "subcategory filter" Format(subcategory=)
+// @Param subsubcategory query string false "subsubcategory filter" Format(subsubcategory=)
+// @Param from query int false "from price" Format(from)
+// @Param to query int false "to price" Format(to)
+// @Param page query int false "page number" Format(page)
+// @Param fieldsort query string false "fieldsort final_price or title.keyword" Format(fieldsort)
+// @Param order query string false "order (asc or desc)" Format(order)
 // @Success 200 {array} api.Product
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError

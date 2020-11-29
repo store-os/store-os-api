@@ -33,6 +33,112 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/autocomplete": {
+            "get": {
+                "description": "get autocomplete",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "autocomplete"
+                ],
+                "summary": "List autocomplete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "q",
+                        "description": "name search by q",
+                        "name": "q",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api.Autocomplete"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog": {
+            "get": {
+                "description": "List posts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "posts"
+                ],
+                "summary": "Blog endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "page=1",
+                        "description": "paging number",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api.Product"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "description": "List products",
@@ -49,9 +155,72 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "format": "q",
+                        "description": "name search by q",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "format": "page=1",
                         "description": "paging number",
                         "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "category=",
+                        "description": "category filter",
+                        "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "subcategory=",
+                        "description": "subcategory filter",
+                        "name": "subcategory",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "subsubcategory=",
+                        "description": "subsubcategory filter",
+                        "name": "subsubcategory",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "from",
+                        "description": "from price",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "to",
+                        "description": "to price",
+                        "name": "to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "page",
+                        "description": "page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "fieldsort",
+                        "description": "fieldsort price or title.keyword",
+                        "name": "fieldsort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "order",
+                        "description": "order (asc or desc)",
+                        "name": "order",
                         "in": "query"
                     }
                 ],
@@ -138,113 +307,23 @@ var doc = `{
                     }
                 }
             }
-        },
-        "/search": {
-            "get": {
-                "description": "search query",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "search"
-                ],
-                "summary": "Search endpoint",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "q",
-                        "description": "name search by q",
-                        "name": "q",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "format": "page=1",
-                        "description": "paging number",
-                        "name": "page",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/api.Product"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    }
-                }
-            }
-        },
-        "/suggest": {
-            "get": {
-                "description": "get autocomplete",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "autocomplete"
-                ],
-                "summary": "List autocomplete",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/api.Suggestion"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
+        "api.Autocomplete": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "api.Comment": {
             "type": "object",
             "properties": {
@@ -279,6 +358,29 @@ var doc = `{
                 }
             }
         },
+        "api.Levels": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "subcategory": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "subsubcategory": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "api.Metadata": {
             "type": "object",
             "properties": {
@@ -308,23 +410,108 @@ var doc = `{
                 }
             }
         },
-        "api.Product": {
+        "api.Paragraph": {
             "type": "object",
             "properties": {
-                "available": {
+                "content": {
                     "description": "Required",
-                    "type": "boolean"
-                },
-                "brand": {
-                    "description": "Optional, by default \"\"",
                     "type": "string"
                 },
-                "category": {
-                    "description": "Optional, by default null",
+                "header": {
+                    "description": "Optional",
+                    "type": "string"
+                },
+                "images": {
+                    "description": "Optional",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "position": {
+                    "description": "Image position regarding the text. (Top, Left, Right, Bottom)",
+                    "type": "string"
+                }
+            }
+        },
+        "api.Post": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "description": "Optional",
+                    "type": "string"
+                },
+                "available": {
+                    "description": "Required (whether it currently is shown or not)",
+                    "type": "boolean"
+                },
+                "comments": {
+                    "description": "Optional, by default null",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Comment"
+                    }
+                },
+                "date": {
+                    "description": "Required",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Required",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Required",
+                    "type": "string"
+                },
+                "images": {
+                    "description": "Required",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "label": {
+                    "description": "Required",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "paragraph": {
+                    "description": "Optional, by default null",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Paragraph"
+                    }
+                },
+                "rating": {
+                    "description": "Optional, by default null",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "social": {
+                    "description": "Optional",
+                    "$ref": "#/definitions/api.Social"
+                },
+                "title": {
+                    "description": "Required",
+                    "type": "string"
+                }
+            }
+        },
+        "api.Product": {
+            "type": "object",
+            "properties": {
+                "available": {
+                    "description": "Required Facetable",
+                    "type": "boolean"
+                },
+                "brand": {
+                    "description": "Optional, by default \"\" Facetable",
+                    "type": "string"
                 },
                 "comments": {
                     "description": "Optional, by default null",
@@ -341,12 +528,16 @@ var doc = `{
                     "description": "Required",
                     "type": "string"
                 },
-                "discount_price": {
+                "discount": {
                     "description": "Optional, by default 0",
                     "type": "integer"
                 },
+                "final_price": {
+                    "description": "Optional",
+                    "type": "integer"
+                },
                 "gender": {
-                    "description": "Optional, by default \"\"",
+                    "description": "Optional, by default \"\" Facetable",
                     "type": "string"
                 },
                 "id": {
@@ -360,6 +551,10 @@ var doc = `{
                         "type": "string"
                     }
                 },
+                "levels": {
+                    "description": "Optional, by default \"\" Facetable",
+                    "$ref": "#/definitions/api.Levels"
+                },
                 "metadata": {
                     "$ref": "#/definitions/api.Metadata"
                 },
@@ -368,7 +563,7 @@ var doc = `{
                     "type": "string"
                 },
                 "price": {
-                    "description": "Optional",
+                    "description": "Optional Facetable range | Sortable",
                     "type": "integer"
                 },
                 "rating": {
@@ -382,15 +577,28 @@ var doc = `{
                     "description": "Optional, by default 0",
                     "type": "integer"
                 },
-                "subcategory": {
-                    "description": "Optional, by default null",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "title": {
-                    "description": "Required",
+                    "description": "Required Sortable | Relevance",
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.Social": {
+            "type": "object",
+            "properties": {
+                "facebook": {
+                    "description": "Optional",
+                    "type": "string"
+                },
+                "instagram": {
+                    "description": "Optional",
+                    "type": "string"
+                },
+                "linkedin": {
+                    "description": "Optional",
                     "type": "string"
                 }
             }
@@ -413,21 +621,15 @@ var doc = `{
             "type": "object",
             "properties": {
                 "color": {
+                    "description": "Facetable",
                     "type": "string"
                 },
                 "sizes": {
+                    "description": "Facetable",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
-                }
-            }
-        },
-        "api.Suggestion": {
-            "type": "object",
-            "properties": {
-                "title": {
-                    "type": "string"
                 }
             }
         },
@@ -459,9 +661,9 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
-	Host:        "localhost:8080",
+	Host:        "store-api.alchersan.com",
 	BasePath:    "/api/v1",
-	Schemes:     []string{},
+	Schemes:     []string{"https"},
 	Title:       "Swagger Store OS API",
 	Description: "This is a sample server celler server.",
 }
