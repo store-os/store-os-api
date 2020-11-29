@@ -84,6 +84,7 @@ func SearchAutocomplete(q string) (Autocompletes, error) {
 
 		autocomplete.Title = value.Title
 		autocomplete.Image = value.Images[0]
+		autocomplete.ID = value.ID
 		autocompleteResponse = append(autocompleteResponse, autocomplete)
 
 	}
