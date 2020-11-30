@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,12 +15,13 @@ import (
 // @Tags posts
 // @Accept  json
 // @Produce  json
+// @Param client path string true "client"
 // @Param page query string false "paging number" Format(page=1)
 // @Success 200 {array} api.Product
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError
 // @Failure 500 {object} httputil.HTTPError
-// @Router /blog [get]
+// @Router /{client}/blog [get]
 func (c *Controller) ListPosts(ctx *gin.Context) {
 	page := ctx.Request.URL.Query().Get("page")
 
@@ -27,7 +29,13 @@ func (c *Controller) ListPosts(ctx *gin.Context) {
 		page = "0"
 	}
 
-	body, hits, err := api.ListPosts(page)
+	client := ctx.Param("client")
+	if client == "" {
+		log.Println("Client no-specified")
+		return
+	}
+
+	body, hits, err := api.ListPosts(client, page)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)
@@ -46,15 +54,21 @@ func (c *Controller) ListPosts(ctx *gin.Context) {
 // @Tags post
 // @Accept  json
 // @Produce  json
+// @Param client path string true "client"
 // @Param id path int true "Post ID"
 // @Success 200 {array} api.Post
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError
 // @Failure 500 {object} httputil.HTTPError
-// @Router /products/{id} [get]
+// @Router /{client}/blog/{id} [get]
 func (c *Controller) OnePost(ctx *gin.Context) {
 	id := ctx.Param("id")
-	body, err := api.OnePost(id)
+	client := ctx.Param("client")
+	if client == "" {
+		log.Println("Client no-specified")
+		return
+	}
+	body, err := api.OnePost(client, id)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)

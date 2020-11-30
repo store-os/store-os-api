@@ -1,5 +1,5 @@
 {
-    "index_patterns": ["*search"],
+    "index_patterns": ["*_catalog"],
         "settings" : {
             "index" : {
               "number_of_shards": 1,
@@ -67,8 +67,5 @@
                 "boost": 2
               }
             }
-          },
-          "aliases": {
-            "index": {}
           }
   }

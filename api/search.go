@@ -208,7 +208,7 @@ func getQuery(q string, category []string, subcategory []string, subsubcategory 
 	return queryJSON
 }
 
-func Search(q string, page string, category []string, subcategory []string, subsubcategory []string, fieldSort string, order string, from string, to string) (SearchResponse, error) {
+func Search(client string, q string, page string, category []string, subcategory []string, subsubcategory []string, fieldSort string, order string, from string, to string) (SearchResponse, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 
@@ -243,7 +243,7 @@ func Search(q string, page string, category []string, subcategory []string, subs
 
 	res, err := es.Search(
 		es.Search.WithContext(context.Background()),
-		es.Search.WithIndex("index"),
+		es.Search.WithIndex(client+"_catalog"),
 		es.Search.WithBody(&buf),
 		es.Search.WithPretty(),
 	)

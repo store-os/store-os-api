@@ -11,7 +11,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func ListPosts(page string) (Posts, int64, error) {
+func ListPosts(client string, page string) (Posts, int64, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
@@ -42,7 +42,7 @@ func ListPosts(page string) (Posts, int64, error) {
 
 	res, err := es.Search(
 		es.Search.WithContext(context.Background()),
-		es.Search.WithIndex("index_blog"),
+		es.Search.WithIndex(client+"_blog"),
 		es.Search.WithBody(&buf),
 		es.Search.WithPretty(),
 	)
@@ -81,14 +81,14 @@ func ListPosts(page string) (Posts, int64, error) {
 	return posts, hits, nil
 }
 
-func OnePost(id string) (Post, error) {
+func OnePost(client string, id string) (Post, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
 		log.Fatalf("Error creating the client: %s", err)
 	}
 
-	res, err := es.GetSource("index_blog", id, es.GetSource.WithPretty())
+	res, err := es.GetSource(client+"_blog", id, es.GetSource.WithPretty())
 
 	if err != nil {
 		log.Fatalf("Error getting response: %s", err)

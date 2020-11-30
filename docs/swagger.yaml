@@ -247,12 +247,17 @@ info:
   title: Swagger Store OS API
   version: "1.0"
 paths:
-  /autocomplete:
+  /{client}/autocomplete:
     get:
       consumes:
       - application/json
       description: get autocomplete
       parameters:
+      - description: client
+        in: path
+        name: client
+        required: true
+        type: string
       - description: name search by q
         format: q
         in: query
@@ -282,12 +287,17 @@ paths:
       summary: List autocomplete
       tags:
       - autocomplete
-  /blog:
+  /{client}/blog:
     get:
       consumes:
       - application/json
       description: List posts
       parameters:
+      - description: client
+        in: path
+        name: client
+        required: true
+        type: string
       - description: paging number
         format: page=1
         in: query
@@ -317,12 +327,57 @@ paths:
       summary: Blog endpoint
       tags:
       - posts
-  /products:
+  /{client}/blog/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get post by ID
+      parameters:
+      - description: client
+        in: path
+        name: client
+        required: true
+        type: string
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.Post'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Blog endpoint
+      tags:
+      - post
+  /{client}/products:
     get:
       consumes:
       - application/json
       description: List products
       parameters:
+      - description: client
+        in: path
+        name: client
+        required: true
+        type: string
       - description: name search by q
         format: q
         in: query
@@ -363,7 +418,7 @@ paths:
         in: query
         name: page
         type: integer
-      - description: fieldsort price or title.keyword
+      - description: fieldsort final_price or title.keyword
         format: fieldsort
         in: query
         name: fieldsort
@@ -397,12 +452,17 @@ paths:
       summary: Products endpoint
       tags:
       - products
-  /products/{id}:
+  /{client}/products/{id}:
     get:
       consumes:
       - application/json
       description: get product by ID
       parameters:
+      - description: client
+        in: path
+        name: client
+        required: true
+        type: string
       - description: Product ID
         in: path
         name: id

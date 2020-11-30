@@ -10,7 +10,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func SearchAutocomplete(q string) (Autocompletes, error) {
+func SearchAutocomplete(client string, q string) (Autocompletes, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
@@ -45,7 +45,7 @@ func SearchAutocomplete(q string) (Autocompletes, error) {
 
 	res, err := es.Search(
 		es.Search.WithContext(context.Background()),
-		es.Search.WithIndex("index"),
+		es.Search.WithIndex(client+"_catalog"),
 		es.Search.WithBody(&buf),
 		es.Search.WithPretty(),
 	)

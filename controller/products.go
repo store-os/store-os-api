@@ -15,6 +15,7 @@ import (
 // @Tags products
 // @Accept  json
 // @Produce  json
+// @Param client path string true "client"
 // @Param q query string false "name search by q" Format(q)
 // @Param page query string false "paging number" Format(page=1)
 // @Param category query string false "category filter" Format(category=)
@@ -29,10 +30,15 @@ import (
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError
 // @Failure 500 {object} httputil.HTTPError
-// @Router /products [get]
+// @Router /{client}/products [get]
 func (c *Controller) Search(ctx *gin.Context) {
-	q := ctx.Request.URL.Query().Get("q")
 
+	client := ctx.Param("client")
+	if client == "" {
+		log.Println("Client no-specified")
+		return
+	}
+	q := ctx.Request.URL.Query().Get("q")
 	category, _ := ctx.Request.URL.Query()["category"]
 	subcategory := ctx.Request.URL.Query()["subcategory"]
 	subsubcategory := ctx.Request.URL.Query()["subsubcategory"]
@@ -54,7 +60,7 @@ func (c *Controller) Search(ctx *gin.Context) {
 	var body api.SearchResponse
 	var err error
 	log.Println(category)
-	body, err = api.Search(q, page, category, subcategory, subsubcategory, fieldSort, order, from, to)
+	body, err = api.Search(client, q, page, category, subcategory, subsubcategory, fieldSort, order, from, to)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)
@@ -70,15 +76,22 @@ func (c *Controller) Search(ctx *gin.Context) {
 // @Tags products
 // @Accept  json
 // @Produce  json
+// @Param client path string true "client"
 // @Param id path int true "Product ID"
 // @Success 200 {array} api.Product
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError
 // @Failure 500 {object} httputil.HTTPError
-// @Router /products/{id} [get]
+// @Router /{client}/products/{id} [get]
 func (c *Controller) OneProduct(ctx *gin.Context) {
 	id := ctx.Param("id")
-	body, err := api.OneProduct(id)
+	client := ctx.Param("client")
+	if client == "" {
+		log.Println("Client no-specified")
+		return
+	}
+
+	body, err := api.OneProduct(client, id)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)

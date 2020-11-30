@@ -58,7 +58,7 @@ func main() {
 
 	c := controller.NewController()
 
-	v1 := r.Group("/api/v1")
+	v1 := r.Group("/api/v1/:client")
 	{
 		autocomplete := v1.Group("/autocomplete")
 		{
@@ -74,18 +74,18 @@ func main() {
 			posts.GET("", c.ListPosts)
 			posts.GET(":id", c.OnePost)
 		}
+	}
 
-		health := v1.Group("/health")
-		{
-			health.GET("", func(c *gin.Context) {
-				c.Header("Access-Control-Allow-Origin", "*")
-				c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
-				c.Header("Access-Control-Allow-Headers", "x-access-token, Origin, X-Requested-With, Content-Type, Accept")
-				c.JSON(200, gin.H{
-					"status": "health",
-				})
+	health := r.Group("/health")
+	{
+		health.GET("", func(c *gin.Context) {
+			c.Header("Access-Control-Allow-Origin", "*")
+			c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
+			c.Header("Access-Control-Allow-Headers", "x-access-token, Origin, X-Requested-With, Content-Type, Accept")
+			c.JSON(200, gin.H{
+				"status": "health",
 			})
-		}
+		})
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

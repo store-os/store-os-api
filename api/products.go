@@ -7,14 +7,14 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 )
 
-func OneProduct(id string) (Product, error) {
+func OneProduct(client string, id string) (Product, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
 		log.Fatalf("Error creating the client: %s", err)
 	}
 
-	res, err := es.GetSource("index", id, es.GetSource.WithPretty())
+	res, err := es.GetSource(client+"_catalog", id, es.GetSource.WithPretty())
 
 	if err != nil {
 		log.Fatalf("Error getting response: %s", err)

@@ -33,7 +33,7 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/autocomplete": {
+        "/{client}/autocomplete": {
             "get": {
                 "description": "get autocomplete",
                 "consumes": [
@@ -47,6 +47,13 @@ var doc = `{
                 ],
                 "summary": "List autocomplete",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "client",
+                        "name": "client",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "format": "q",
@@ -86,7 +93,7 @@ var doc = `{
                 }
             }
         },
-        "/blog": {
+        "/{client}/blog": {
             "get": {
                 "description": "List posts",
                 "consumes": [
@@ -100,6 +107,13 @@ var doc = `{
                 ],
                 "summary": "Blog endpoint",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "client",
+                        "name": "client",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "format": "page=1",
@@ -139,7 +153,67 @@ var doc = `{
                 }
             }
         },
-        "/products": {
+        "/{client}/blog/{id}": {
+            "get": {
+                "description": "get post by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "summary": "Blog endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "client",
+                        "name": "client",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Post ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api.Post"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/{client}/products": {
             "get": {
                 "description": "List products",
                 "consumes": [
@@ -153,6 +227,13 @@ var doc = `{
                 ],
                 "summary": "Products endpoint",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "client",
+                        "name": "client",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "format": "q",
@@ -212,7 +293,7 @@ var doc = `{
                     {
                         "type": "string",
                         "format": "fieldsort",
-                        "description": "fieldsort price or title.keyword",
+                        "description": "fieldsort final_price or title.keyword",
                         "name": "fieldsort",
                         "in": "query"
                     },
@@ -255,7 +336,7 @@ var doc = `{
                 }
             }
         },
-        "/products/{id}": {
+        "/{client}/products/{id}": {
             "get": {
                 "description": "get product by ID",
                 "consumes": [
@@ -269,6 +350,13 @@ var doc = `{
                 ],
                 "summary": "Products endpoint",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "client",
+                        "name": "client",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "Product ID",
