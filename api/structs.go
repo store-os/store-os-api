@@ -75,12 +75,6 @@ type AutocompleteResponse struct {
 	Autocomplete Autocompletes `json:"autocomplete"`
 }
 
-type Paragraph struct {
-	Header   string   `json:"header"`   //Optional
-	Content  string   `json:"content"`  //Required
-	Images   []string `json:"images"`   //Optional
-	Position string   `json:"position"` //Image position regarding the text. (Top, Left, Right, Bottom)
-}
 type Social struct {
 	Instagram string `json:"instagram"` //Optional
 	Facebook  string `json:"facebook"`  //Optional
@@ -88,18 +82,18 @@ type Social struct {
 }
 
 type Post struct {
-	Title       string      `json:"title"`       //Required
-	ID          string      `json:"id"`          //Required
-	Description string      `json:"description"` //Required
-	Images      []string    `json:"images"`      //Required
-	Author      string      `json:"author"`      //Optional
-	Available   bool        `json:"available"`   //Required (whether it currently is shown or not)
-	Date        string      `json:"date"`        //Required
-	Label       []string    `json:"label"`       //Required
-	Content     []Paragraph `json:"paragraph"`   //Optional, by default null
-	SocialMed   Social      `json:"social"`      //Optional
-	Rating      []int       `json:"rating"`      //Optional, by default null
-	Comments    []Comment   `json:"comments"`    //Optional, by default null
+	Title       string    `json:"title"`       //Required
+	ID          string    `json:"id"`          //Required
+	Description string    `json:"description"` //Required
+	Images      []string  `json:"images"`      //Required
+	Author      string    `json:"author"`      //Optional
+	Available   bool      `json:"available"`   //Required (whether it currently is shown or not)
+	Date        string    `json:"date"`        //Required
+	Label       []string  `json:"label"`       //Required
+	Content     string    `json:"content"`     //Optional, by default null
+	SocialMed   Social    `json:"social"`      //Optional
+	Rating      []int     `json:"rating"`      //Optional, by default null
+	Comments    []Comment `json:"comments"`    //Optional, by default null
 }
 
 type Posts []Post
