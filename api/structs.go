@@ -81,12 +81,18 @@ type Social struct {
 	Linkedin  string `json:"linkedin"`  //Optional
 }
 
+type Author struct {
+	Avatar string `json:"avatar"` //Optional
+	Name   string `json:"name"`   //Optional
+	Role   string `json:"role"`   //Optional
+}
+
 type Post struct {
 	Title       string    `json:"title"`       //Required
 	ID          string    `json:"id"`          //Required
 	Description string    `json:"description"` //Required
 	Images      []string  `json:"images"`      //Required
-	Author      string    `json:"author"`      //Optional
+	Author      Author    `json:"author"`      //Optional
 	Available   bool      `json:"available"`   //Required (whether it currently is shown or not)
 	Date        string    `json:"date"`        //Required
 	Label       []string  `json:"label"`       //Required
