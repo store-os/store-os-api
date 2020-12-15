@@ -22,9 +22,13 @@ func ListPosts(client string, page string, size string) (Posts, int64, error) {
 	var buf bytes.Buffer
 
 	pageInt, err := strconv.Atoi(page)
-	sizeInt, err := strconv.Atoi(size)
 	if err != nil {
 		log.Fatalf("Error converting page", err)
+	}
+
+	sizeInt, err := strconv.Atoi(size)
+	if err != nil {
+		log.Fatalf("Error converting size", err)
 	}
 
 	query := map[string]interface{}{

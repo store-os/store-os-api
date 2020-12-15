@@ -223,9 +223,13 @@ func Search(client string, q string, page string, category []string, subcategory
 	queryJSON := getQuery(q, category, subcategory, subsubcategory, from, to)
 
 	pageInt, err := strconv.Atoi(page)
-	sizeInt, err := strconv.Atoi(size)
 	if err != nil {
 		log.Fatalf("Error converting page", err)
+	}
+
+	sizeInt, err := strconv.Atoi(size)
+	if err != nil {
+		log.Fatalf("Error converting size", err)
 	}
 
 	sort := getSort(fieldSort, order)
