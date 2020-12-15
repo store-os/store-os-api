@@ -47,6 +47,7 @@ func (c *Controller) Search(ctx *gin.Context) {
 	from := ctx.Request.URL.Query().Get("from")
 	to := ctx.Request.URL.Query().Get("to")
 	page := ctx.Request.URL.Query().Get("page")
+	size := ctx.Request.URL.Query().Get("size")
 
 	if page == "" {
 		page = "0"
@@ -57,10 +58,13 @@ func (c *Controller) Search(ctx *gin.Context) {
 	if order == "" {
 		order = "asc"
 	}
+	if size == "" {
+		size = "20"
+	}
 	var body api.SearchResponse
 	var err error
 	log.Println(category)
-	body, err = api.Search(client, q, page, category, subcategory, subsubcategory, fieldSort, order, from, to)
+	body, err = api.Search(client, q, page, category, subcategory, subsubcategory, fieldSort, order, from, to, size)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)

@@ -8,18 +8,18 @@ services:
       - "9200:9200"
       - "9300:9300"
     restart: unless-stopped
-  # kibana:
-  #   image: "docker.elastic.co/kibana/kibana:7.6.1"
-  #   links:
-  #     - "elasticsearch:elasticsearch"
-  #   ports:
-  #     - "5601:5601"
-  #   restart: unless-stopped
-  # cerebro: 
-  #   image: "yannart/cerebro:latest"
-  #   ports:
-  #     - "9000:9000"
-  #   restart: unless-stopped
+  kibana:
+    image: "docker.elastic.co/kibana/kibana:7.6.1"
+    links:
+      - "elasticsearch:elasticsearch"
+    ports:
+      - "5601:5601"
+    restart: unless-stopped
+  cerebro: 
+    image: "yannart/cerebro:latest"
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
   curl: 
     image: "ellerbrock/alpine-bash-curl-ssl"
     volumes:
