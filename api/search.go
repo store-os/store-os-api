@@ -208,7 +208,7 @@ func getQuery(q string, category []string, subcategory []string, subsubcategory 
 	return queryJSON
 }
 
-func Search(client string, q string, page string, category []string, subcategory []string, subsubcategory []string, fieldSort string, order string, from string, to string) (SearchResponse, error) {
+func Search(client string, q string, page string, category []string, subcategory []string, subsubcategory []string, fieldSort string, order string, from string, to string, size string) (SearchResponse, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 
@@ -227,13 +227,18 @@ func Search(client string, q string, page string, category []string, subcategory
 		log.Fatalf("Error converting page", err)
 	}
 
+	sizeInt, err := strconv.Atoi(size)
+	if err != nil {
+		log.Fatalf("Error converting size", err)
+	}
+
 	sort := getSort(fieldSort, order)
 
 	query := map[string]interface{}{
 		"query": queryJSON,
 		"aggs":  aggs,
-		"from":  pageInt * size,
-		"size":  size,
+		"from":  pageInt * sizeInt,
+		"size":  sizeInt,
 		"sort":  sort,
 	}
 	//fmt.Println(query)
