@@ -1,11 +1,17 @@
 {
-    "index_patterns": ["*_catalog"],
+    "index_patterns": ["*-catalog"],
         "settings" : {
             "index" : {
               "number_of_shards": 1,
             "number_of_replicas": 0,
               "analysis" : {
                 "analyzer" : {
+                  "spanish_exact": {
+                    "filter": [
+                      "lowercase"
+                    ],
+                    "tokenizer": "standard"
+                  },
                   "part_number_analyzer" : {
                     "type" : "custom",
                     "tokenizer" : "keyword",
@@ -35,7 +41,7 @@
           },
           "mappings": {
             "properties": {
-              "reference": {
+              "id": {
                 "type": "text",
                 "analyzer": "part_number_analyzer",
                 "search_analyzer": "keyword",
@@ -50,9 +56,15 @@
               "final_price": {
                 "type": "long"
               },
-              "description": {
+              "mini_description": {
                 "type": "text", 
-                "analyzer": "spanish"
+                "analyzer": "spanish",
+                "fields": {
+                  "exact": {
+                    "analyzer": "spanish_exact",
+                    "type": "text"
+                  }
+                }
               },
               "title": {
                 "type": "text",
@@ -62,6 +74,10 @@
                   },
                   "keyword": {
                     "type": "keyword"
+                  },
+                  "exact": {
+                    "analyzer": "spanish_exact",
+                    "type": "text"
                   }
                 },
                 "boost": 2

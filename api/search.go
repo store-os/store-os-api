@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/tidwall/gjson"
@@ -149,10 +150,13 @@ func getSort(field string, order string) []map[string]interface{} {
 
 func getQuery(q string, category []string, subcategory []string, subsubcategory []string, from string, to string) map[string]interface{} {
 
-	desc := map[string]interface{}{
-		"match_phrase": map[string]interface{}{
-			"description": map[string]interface{}{
-				"query": q,
+	miniDescription := map[string]interface{}{
+		"simple_query_string": map[string]interface{}{
+			"query":              "\"" + q + "\"",
+			"quote_field_suffix": ".exact",
+			"fields": []string{
+				"mini_description",
+				"title",
 			},
 		},
 	}
@@ -163,24 +167,35 @@ func getQuery(q string, category []string, subcategory []string, subsubcategory 
 		},
 	}
 
-	tit := map[string]interface{}{
-		"multi_match": map[string]interface{}{
-			"query": q,
-			"type":  "bool_prefix",
-			"fields": []string{
-				"title",
-				"title._2gram",
-				"title._3gram",
+	countSpace := strings.Count(q, " ")
+	//fmt.Println("Number of spaces:", countSpace)
+	should := map[string]interface{}{}
+	if countSpace == 0 {
+		tit := map[string]interface{}{
+			"multi_match": map[string]interface{}{
+				"query": q,
+				"type":  "bool_prefix",
+				"fields": []string{
+					"title.autocomplete",
+					"title.autocomplete._2gram",
+					"title.autocomplete._3gram",
+				},
 			},
-		},
-	}
-
-	should := map[string]interface{}{
-		"should": []map[string]interface{}{
-			desc,
-			ref,
-			tit,
-		},
+		}
+		should = map[string]interface{}{
+			"should": []map[string]interface{}{
+				miniDescription,
+				ref,
+				tit,
+			},
+		}
+	} else {
+		should = map[string]interface{}{
+			"should": []map[string]interface{}{
+				miniDescription,
+				ref,
+			},
+		}
 	}
 
 	filters := map[string]interface{}{
