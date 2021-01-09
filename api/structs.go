@@ -1,7 +1,5 @@
 package api
 
-var size int = 20
-
 type Autocomplete struct {
 	Title string `json:"title"`
 	Image string `json:"image"`

@@ -11,7 +11,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func ListPosts(client string, page string) (Posts, int64, error) {
+func ListPosts(client string, page string, size string) (Posts, int64, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
@@ -26,12 +26,17 @@ func ListPosts(client string, page string) (Posts, int64, error) {
 		log.Fatalf("Error converting page", err)
 	}
 
+	sizeInt, err := strconv.Atoi(size)
+	if err != nil {
+		log.Fatalf("Error converting size", err)
+	}
+
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
 			"match_all": map[string]interface{}{},
 		},
-		"from": pageInt * size,
-		"size": size,
+		"from": pageInt * sizeInt,
+		"size": sizeInt,
 	}
 
 	//fmt.Println(query)

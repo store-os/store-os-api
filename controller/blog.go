@@ -24,9 +24,14 @@ import (
 // @Router /{client}/blog [get]
 func (c *Controller) ListPosts(ctx *gin.Context) {
 	page := ctx.Request.URL.Query().Get("page")
+	size := ctx.Request.URL.Query().Get("size")
 
 	if page == "" {
 		page = "0"
+	}
+
+	if size == "" {
+		size = "20"
 	}
 
 	client := ctx.Param("client")
@@ -35,7 +40,7 @@ func (c *Controller) ListPosts(ctx *gin.Context) {
 		return
 	}
 
-	body, hits, err := api.ListPosts(client, page)
+	body, hits, err := api.ListPosts(client, page, size)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)
