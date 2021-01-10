@@ -17,6 +17,11 @@ import (
 // @Produce  json
 // @Param client path string true "client"
 // @Param q query string false "name search by q" Format(q)
+// @Param category query string false "category filter" Format(category=)
+// @Param subcategory query string false "subcategory filter" Format(subcategory=)
+// @Param subsubcategory query string false "subsubcategory filter" Format(subsubcategory=)
+// @Param from query int false "from price" Format(from)
+// @Param to query int false "to price" Format(to)
 // @Success 200 {array} api.Autocomplete
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError
