@@ -68,6 +68,7 @@ func main() {
 		{
 			products.GET("", c.Search)
 			products.GET(":id", c.OneProduct)
+			products.POST(":id/update", c.EditProduct)
 		}
 		posts := v1.Group("/blog")
 		{

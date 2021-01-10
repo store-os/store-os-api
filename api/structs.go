@@ -61,6 +61,10 @@ type Product struct {
 	Url             string    `json:"url"`
 }
 
+type UpdateProduct struct {
+	Doc Product `json:"doc"`
+}
+
 type Products []Product
 
 type SearchResponse struct {
