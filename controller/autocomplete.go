@@ -32,7 +32,13 @@ func (c *Controller) Autocomplete(ctx *gin.Context) {
 
 	q := ctx.Request.URL.Query().Get("q")
 
-	body, err := api.SearchAutocomplete(client, q)
+	category, _ := ctx.Request.URL.Query()["category"]
+	subcategory := ctx.Request.URL.Query()["subcategory"]
+	subsubcategory := ctx.Request.URL.Query()["subsubcategory"]
+	from := ctx.Request.URL.Query().Get("from")
+	to := ctx.Request.URL.Query().Get("to")
+
+	body, err := api.SearchAutocomplete(client, q, category, subcategory, subsubcategory, from, to)
 
 	if err != nil {
 		httputil.NewError(ctx, http.StatusNotFound, err)

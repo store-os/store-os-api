@@ -10,28 +10,38 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func SearchAutocomplete(client string, q string) (Autocompletes, error) {
+func SearchAutocomplete(client string, q string, category []string, subcategory []string, subsubcategory []string, from string, to string) (Autocompletes, error) {
 
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
 		log.Fatalf("Error creating the client: %s", err)
 	}
 
+	termFilter := filtering(category, subcategory, subsubcategory, from, to, q)
+	//fmt.Println(term_filter)
 	// Build the request body.
 	var buf bytes.Buffer
 
 	log.Printf(q)
 
+	titleAutocomplete := map[string]interface{}{
+		"multi_match": map[string]interface{}{
+			"query": q,
+			"type":  "bool_prefix",
+			"fields": []string{
+				"title.autocomplete",
+				"title.autocomplete._2gram",
+				"title.autocomplete._3gram",
+			},
+		},
+	}
+
+	termFilter = append(termFilter, titleAutocomplete)
+
 	query := map[string]interface{}{
 		"query": map[string]interface{}{
-			"multi_match": map[string]interface{}{
-				"query": q,
-				"type":  "bool_prefix",
-				"fields": []string{
-					"title.autocomplete",
-					"title.autocomplete._2gram",
-					"title.autocomplete._3gram",
-				},
+			"bool": map[string]interface{}{
+				"must": termFilter,
 			},
 		},
 		"size": "3",
