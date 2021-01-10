@@ -60,6 +60,41 @@ var doc = `{
                         "description": "name search by q",
                         "name": "q",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "category=",
+                        "description": "category filter",
+                        "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "subcategory=",
+                        "description": "subcategory filter",
+                        "name": "subcategory",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "subsubcategory=",
+                        "description": "subsubcategory filter",
+                        "name": "subsubcategory",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "from",
+                        "description": "from price",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "to",
+                        "description": "to price",
+                        "name": "to",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -398,6 +433,23 @@ var doc = `{
         }
     },
     "definitions": {
+        "api.Author": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "description": "Optional",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Optional",
+                    "type": "string"
+                },
+                "role": {
+                    "description": "Optional",
+                    "type": "string"
+                }
+            }
+        },
         "api.Autocomplete": {
             "type": "object",
             "properties": {
@@ -498,36 +550,12 @@ var doc = `{
                 }
             }
         },
-        "api.Paragraph": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "description": "Required",
-                    "type": "string"
-                },
-                "header": {
-                    "description": "Optional",
-                    "type": "string"
-                },
-                "images": {
-                    "description": "Optional",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "position": {
-                    "description": "Image position regarding the text. (Top, Left, Right, Bottom)",
-                    "type": "string"
-                }
-            }
-        },
         "api.Post": {
             "type": "object",
             "properties": {
                 "author": {
                     "description": "Optional",
-                    "type": "string"
+                    "$ref": "#/definitions/api.Author"
                 },
                 "available": {
                     "description": "Required (whether it currently is shown or not)",
@@ -539,6 +567,10 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/api.Comment"
                     }
+                },
+                "content": {
+                    "description": "Optional, by default null",
+                    "type": "string"
                 },
                 "date": {
                     "description": "Required",
@@ -564,13 +596,6 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
-                },
-                "paragraph": {
-                    "description": "Optional, by default null",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/api.Paragraph"
                     }
                 },
                 "rating": {

@@ -1,5 +1,17 @@
 basePath: /api/v1
 definitions:
+  api.Author:
+    properties:
+      avatar:
+        description: Optional
+        type: string
+      name:
+        description: Optional
+        type: string
+      role:
+        description: Optional
+        type: string
+    type: object
   api.Autocomplete:
     properties:
       id:
@@ -65,28 +77,11 @@ definitions:
           $ref: '#/definitions/api.Stock'
         type: array
     type: object
-  api.Paragraph:
-    properties:
-      content:
-        description: Required
-        type: string
-      header:
-        description: Optional
-        type: string
-      images:
-        description: Optional
-        items:
-          type: string
-        type: array
-      position:
-        description: Image position regarding the text. (Top, Left, Right, Bottom)
-        type: string
-    type: object
   api.Post:
     properties:
       author:
+        $ref: '#/definitions/api.Author'
         description: Optional
-        type: string
       available:
         description: Required (whether it currently is shown or not)
         type: boolean
@@ -95,6 +90,9 @@ definitions:
         items:
           $ref: '#/definitions/api.Comment'
         type: array
+      content:
+        description: Optional, by default null
+        type: string
       date:
         description: Required
         type: string
@@ -113,11 +111,6 @@ definitions:
         description: Required
         items:
           type: string
-        type: array
-      paragraph:
-        description: Optional, by default null
-        items:
-          $ref: '#/definitions/api.Paragraph'
         type: array
       rating:
         description: Optional, by default null
@@ -263,6 +256,31 @@ paths:
         in: query
         name: q
         type: string
+      - description: category filter
+        format: category=
+        in: query
+        name: category
+        type: string
+      - description: subcategory filter
+        format: subcategory=
+        in: query
+        name: subcategory
+        type: string
+      - description: subsubcategory filter
+        format: subsubcategory=
+        in: query
+        name: subsubcategory
+        type: string
+      - description: from price
+        format: from
+        in: query
+        name: from
+        type: integer
+      - description: to price
+        format: to
+        in: query
+        name: to
+        type: integer
       produces:
       - application/json
       responses:
