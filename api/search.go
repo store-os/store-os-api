@@ -170,6 +170,14 @@ func getQuery(q string, category []string, subcategory []string, subsubcategory 
 	countSpace := strings.Count(q, " ")
 	//fmt.Println("Number of spaces:", countSpace)
 	should := map[string]interface{}{}
+
+	term_filter := filtering(category, subcategory, subsubcategory, from, to, q)
+
+	length_filter := len(term_filter)
+
+	term_filter = append(term_filter, miniDescription)
+	term_filter = append(term_filter, ref)
+
 	if countSpace == 0 {
 		tit := map[string]interface{}{
 			"multi_match": map[string]interface{}{
@@ -182,24 +190,31 @@ func getQuery(q string, category []string, subcategory []string, subsubcategory 
 				},
 			},
 		}
+
+		term_filter = append(term_filter, tit)
+		if q == "" {
+			length_filter = 1
+		} else {
+			length_filter = length_filter + 2
+		}
 		should = map[string]interface{}{
-			"should": []map[string]interface{}{
-				miniDescription,
-				ref,
-				tit,
-			},
+			"should":               term_filter,
+			"minimum_should_match": length_filter,
 		}
 	} else {
+		if q == "" {
+			length_filter = 1
+		} else {
+			length_filter = length_filter + 1
+		}
 		should = map[string]interface{}{
-			"should": []map[string]interface{}{
-				miniDescription,
-				ref,
-			},
+			"should":               term_filter,
+			"minimum_should_match": length_filter,
 		}
 	}
 
 	filters := map[string]interface{}{
-		"must": filtering(category, subcategory, subsubcategory, from, to, q),
+		"filter": filtering(category, subcategory, subsubcategory, from, to, q),
 	}
 
 	for k, v := range should {

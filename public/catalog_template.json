@@ -1,5 +1,5 @@
 {
-    "index_patterns": ["*-catalog"],
+    "index_patterns": ["*_catalog"],
         "settings" : {
             "index" : {
               "number_of_shards": 1,
