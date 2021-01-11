@@ -192,10 +192,10 @@ func getQuery(q string, category []string, subcategory []string, subsubcategory 
 		}
 
 		term_filter = append(term_filter, tit)
-		if q == "" {
+		if q == "" || length_filter == 0 {
 			length_filter = 1
 		} else {
-			length_filter = length_filter + 2
+			length_filter = length_filter + 1
 		}
 		should = map[string]interface{}{
 			"should":               term_filter,
@@ -235,6 +235,7 @@ func getQuery(q string, category []string, subcategory []string, subsubcategory 
 		"bool": boolQuery,
 	}
 
+	//fmt.Println(queryJSON)
 	return queryJSON
 }
 
