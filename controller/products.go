@@ -26,6 +26,7 @@ import (
 // @Param page query int false "page number" Format(page)
 // @Param fieldsort query string false "fieldsort final_price or title.keyword" Format(fieldsort)
 // @Param order query string false "order (asc or desc)" Format(order)
+// @Param size query string false "size" Format(size)
 // @Success 200 {array} api.Product
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError
@@ -75,14 +76,14 @@ func (c *Controller) Search(ctx *gin.Context) {
 }
 
 // Products godoc
-// @Summary Products endpoint
+// @Summary OneProduct endpoint
 // @Description get product by ID
 // @Tags products
 // @Accept  json
 // @Produce  json
 // @Param client path string true "client"
 // @Param id path int true "Product ID"
-// @Success 200 {array} api.Product
+// @Success 200 {object} api.OneProductResponse
 // @Failure 400 {object} httputil.HTTPError
 // @Failure 404 {object} httputil.HTTPError
 // @Failure 500 {object} httputil.HTTPError

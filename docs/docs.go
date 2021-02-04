@@ -338,6 +338,13 @@ var doc = `{
                         "description": "order (asc or desc)",
                         "name": "order",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "size",
+                        "description": "size",
+                        "name": "size",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -374,6 +381,61 @@ var doc = `{
         "/{client}/products/{id}": {
             "get": {
                 "description": "get product by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "OneProduct endpoint",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "client",
+                        "name": "client",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.OneProductResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "post product by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -550,6 +612,17 @@ var doc = `{
                 }
             }
         },
+        "api.OneProductResponse": {
+            "type": "object",
+            "properties": {
+                "product": {
+                    "$ref": "#/definitions/api.Product"
+                },
+                "relatedProducts": {
+                    "$ref": "#/definitions/api.RelatedProducts"
+                }
+            }
+        },
         "api.Post": {
             "type": "object",
             "properties": {
@@ -686,6 +759,13 @@ var doc = `{
                         "type": "integer"
                     }
                 },
+                "related_products": {
+                    "description": "Optional, by default null",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "ship_price": {
                     "description": "Optional, by default 0",
                     "type": "integer"
@@ -696,6 +776,20 @@ var doc = `{
                 },
                 "url": {
                     "type": "string"
+                }
+            }
+        },
+        "api.RelatedProducts": {
+            "type": "object",
+            "properties": {
+                "hits": {
+                    "type": "integer"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Product"
+                    }
                 }
             }
         },
