@@ -77,6 +77,13 @@ definitions:
           $ref: '#/definitions/api.Stock'
         type: array
     type: object
+  api.OneProductResponse:
+    properties:
+      product:
+        $ref: '#/definitions/api.Product'
+      relatedProducts:
+        $ref: '#/definitions/api.RelatedProducts'
+    type: object
   api.Post:
     properties:
       author:
@@ -176,6 +183,11 @@ definitions:
         items:
           type: integer
         type: array
+      related_products:
+        description: Optional, by default null
+        items:
+          type: string
+        type: array
       ship_price:
         description: Optional, by default 0
         type: integer
@@ -184,6 +196,15 @@ definitions:
         type: string
       url:
         type: string
+    type: object
+  api.RelatedProducts:
+    properties:
+      hits:
+        type: integer
+      products:
+        items:
+          $ref: '#/definitions/api.Product'
+        type: array
     type: object
   api.Social:
     properties:
@@ -446,6 +467,11 @@ paths:
         in: query
         name: order
         type: string
+      - description: size
+        format: size
+        in: query
+        name: size
+        type: string
       produces:
       - application/json
       responses:
@@ -475,6 +501,43 @@ paths:
       consumes:
       - application/json
       description: get product by ID
+      parameters:
+      - description: client
+        in: path
+        name: client
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.OneProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: OneProduct endpoint
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: post product by ID
       parameters:
       - description: client
         in: path

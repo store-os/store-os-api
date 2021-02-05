@@ -52,6 +52,7 @@ type Product struct {
 	ShipPrice       int       `json:"ship_price"`       //Optional, by default 0
 	Discount        int       `json:"discount"`         //Optional, by default 0
 	FinalPrice      int       `json:"final_price"`      //Optional
+	RelatedProducts []string  `json:"related_products"` //Optional, by default null
 	Brand           string    `json:"brand"`            //Optional, by default "" Facetable
 	Gender          string    `json:"gender"`           //Optional, by default "" Facetable
 	Rating          []int     `json:"rating"`           //Optional, by default null
@@ -66,6 +67,16 @@ type UpdateProduct struct {
 }
 
 type Products []Product
+
+type RelatedProducts struct {
+	Hits     int      `json:"hits"`
+	Products Products `json:"products"`
+}
+
+type OneProductResponse struct {
+	Product         Product         `json:"product"`
+	RelatedProducts RelatedProducts `json:"relatedProducts"`
+}
 
 type SearchResponse struct {
 	Products     Products               `json:"products"`
