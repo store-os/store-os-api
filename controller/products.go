@@ -105,3 +105,32 @@ func (c *Controller) OneProduct(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, body)
 }
+
+// Products godoc
+// @Summary Aggs endpoint
+// @Description get aggs
+// @Tags products
+// @Accept  json
+// @Produce  json
+// @Param client path string true "client"
+// @Success 200 {object} api.AggsResponse
+// @Failure 400 {object} httputil.HTTPError
+// @Failure 404 {object} httputil.HTTPError
+// @Failure 500 {object} httputil.HTTPError
+// @Router /{client}/aggs [get]
+func (c *Controller) Aggs(ctx *gin.Context) {
+	client := ctx.Param("client")
+	if client == "" {
+		log.Println("Client no-specified")
+		return
+	}
+
+	body, err := api.Aggs(client)
+
+	if err != nil {
+		httputil.NewError(ctx, http.StatusNotFound, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, body)
+}

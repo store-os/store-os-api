@@ -324,3 +324,53 @@ func Search(client string, q string, page string, category []string, subcategory
 
 	return searchResponse, nil
 }
+
+func Aggs(client string) (AggsResponse, error) {
+
+	es, err := elasticsearch.NewDefaultClient()
+
+	if err != nil {
+		log.Fatalf("Error creating the client: %s", err)
+	}
+
+	// Build the request body.
+	var buf bytes.Buffer
+
+	aggs := getAggs()
+
+	query := map[string]interface{}{
+		"aggs": aggs,
+	}
+	//fmt.Println(query)
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		log.Fatalf("Error encoding query: %s", err)
+	}
+
+	res, err := es.Search(
+		es.Search.WithContext(context.Background()),
+		es.Search.WithIndex(client+"_catalog"),
+		es.Search.WithBody(&buf),
+		es.Search.WithPretty(),
+	)
+
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+
+	defer res.Body.Close()
+
+	jsonBody := read(res.Body)
+
+	aggregations := gjson.Get(jsonBody, "aggregations")
+
+	var aggsResponse AggsResponse
+
+	err = json.Unmarshal([]byte(aggregations.Raw), &aggsResponse.Aggregations)
+
+	if err != nil {
+		log.Printf("error:%s", err)
+		return aggsResponse, err
+	}
+
+	return aggsResponse, nil
+}

@@ -84,6 +84,10 @@ type SearchResponse struct {
 	Hits         int                    `json:"hits"`
 }
 
+type AggsResponse struct {
+	Aggregations map[string]interface{} `json:"aggregations"`
+}
+
 type AutocompleteResponse struct {
 	Autocomplete Autocompletes `json:"autocomplete"`
 }

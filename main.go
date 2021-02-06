@@ -70,6 +70,10 @@ func main() {
 			products.GET(":id", c.OneProduct)
 			products.POST(":id/update", c.EditProduct)
 		}
+		aggs := v1.Group("/aggs")
+		{
+			aggs.GET("", c.Aggs)
+		}
 		posts := v1.Group("/blog")
 		{
 			posts.GET("", c.ListPosts)
