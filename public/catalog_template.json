@@ -66,6 +66,40 @@
                   }
                 }
               },
+              "levels": { 
+                "properties": { 
+                  "category": { 
+                    "type": "text",
+                    "fields": { 
+                      "keyword": { 
+                        "type": "keyword",
+                        "ignore_above": 256,
+                        "null_value": "NULL"
+                      }
+                    }
+                  },
+                  "subcategory": { 
+                    "type": "text",
+                    "fields": { 
+                      "keyword": { 
+                        "type": "keyword",
+                        "ignore_above": 256,
+                        "null_value": "NULL"
+                      }
+                    }
+                  },
+                  "subsubcategory": { 
+                    "type": "text",
+                    "fields": { 
+                      "keyword": { 
+                        "type": "keyword",
+                        "ignore_above": 256,
+                        "null_value": "NULL"
+                      }
+                    }
+                  }
+                }
+              },
               "title": {
                 "type": "text",
                 "fields": {
