@@ -1,0 +1,26 @@
+version: '3'
+services:
+  elasticsearch:
+    platform: linux/arm64/v8
+    image: "elasticsearch:7.8.1"
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    restart: unless-stopped
+  api:
+    image: storeos/store-os-api:v0.0.1-alpha
+    environment:
+      ELASTICSEARCH_URL: "http://elasticsearch:9200"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
