@@ -2,14 +2,14 @@ package main
 
 import (
 	"flag"
+	"log"
 	"math/rand"
 	"runtime"
 	"time"
 
-	"github.com/store-os/store-os-api/controller"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/store-os/store-os-api/controller"
 	_ "github.com/store-os/store-os-api/docs"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -52,6 +52,7 @@ func init() {
 // @query.collection.format multi
 
 func main() {
+	log.Printf("OS: %s\nArchitecture: %s\n", runtime.GOOS, runtime.GOARCH)
 	r := gin.Default()
 
 	r.Use(cors.Default())
