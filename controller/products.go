@@ -64,7 +64,7 @@ func (c *Controller) Search(ctx *gin.Context) {
 	}
 	var body api.SearchResponse
 	var err error
-	log.Println(category)
+	//log.Println(category)
 	body, err = api.Search(client, q, page, category, subcategory, subsubcategory, fieldSort, order, from, to, size)
 
 	if err != nil {

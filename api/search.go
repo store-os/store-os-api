@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -237,7 +236,7 @@ func getQuery(q string, category []string, subcategory []string, subsubcategory 
 		"bool": boolQuery,
 	}
 
-	fmt.Println(queryJSON)
+	//fmt.Println(queryJSON)
 	return queryJSON
 }
 

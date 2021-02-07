@@ -1,10 +1,12 @@
-FROM golang:alpine
+ARG ARCH=
+
+FROM ${ARCH}golang:1.15-alpine
 
 # Set necessary environmet variables needed for our image
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
     GOOS=linux \
-    GOARCH=amd64
+    GOARCH=arm64
 
 WORKDIR /build
 COPY go.mod .

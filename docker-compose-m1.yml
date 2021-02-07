@@ -9,27 +9,27 @@ services:
       - "9200:9200"
       - "9300:9300"
     restart: unless-stopped
-  kibana:
-    image: "docker.elastic.co/kibana/kibana:7.8.1"
-    links:
-      - "elasticsearch:elasticsearch"
-    ports:
-      - "5601:5601"
-    restart: unless-stopped
-  cerebro: 
-    image: "lmenezes/cerebro"
-    ports:
-      - "9000:9000"
-    restart: unless-stopped
-  curl: 
-    image: "ellerbrock/alpine-bash-curl-ssl"
-    volumes:
-      - "$PWD:/work"
-    depends_on: 
-      - "elasticsearch"
-    command:
-      - "sh"
-      - "/work/public/wait-for-elastic.sh"
+  # kibana:
+  #   image: "docker.elastic.co/kibana/kibana:7.8.1"
+  #   links:
+  #     - "elasticsearch:elasticsearch"
+  #   ports:
+  #     - "5601:5601"
+  #   restart: unless-stopped
+  # cerebro: 
+  #   image: "lmenezes/cerebro"
+  #   ports:
+  #     - "9000:9000"
+  #   restart: unless-stopped
+  # curl: 
+  #   image: "ellerbrock/alpine-bash-curl-ssl"
+  #   volumes:
+  #     - "$PWD:/work"
+  #   depends_on: 
+  #     - "elasticsearch"
+  #   command:
+  #     - "sh"
+  #     - "/work/public/wait-for-elastic.sh"
   api:
     build: .
     environment: 
