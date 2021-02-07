@@ -2,7 +2,7 @@ name: build our image
 
 on:
   push:
-    branches: main
+    branches: feature/action
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
         with:
           version: latest
       - name: build the image
-      run: |
-        TAG="${{ github.ref }}"
-        echo $TAG
-        docker buildx build --platform linux/arm64/v8,linux/amd64 --tag storeos/store-os-api:$TAG .
+        run: |
+          TAG="${{ github.ref }}"
+          echo $TAG
+          docker buildx build --platform linux/arm64/v8,linux/amd64 --tag storeos/store-os-api:$TAG .
