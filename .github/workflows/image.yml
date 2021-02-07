@@ -20,4 +20,4 @@ jobs:
         run: |
           TAG=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           echo $TAG
-          docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag storeos/store-os-api:$TAG .
+          docker buildx build --push --platform linux/arm64/v8,linux/amd64,linux/386,linux/arm/v6,linux/arm/v7,linux/ppc64le,linux/s390x --tag storeos/store-os-api:$TAG .
