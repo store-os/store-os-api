@@ -1,12 +1,18 @@
 ARG ARCH=
 
+ARG TARGETOS
+ARG TARGETARCH
+
+RUN echo ${TARGETOS} 
+RUN echo ${TARGETARCH}
+
 FROM ${ARCH}golang:1.15-alpine
 
 # Set necessary environmet variables needed for our image
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=arm64
+    GOOS=${TARGETOS} \
+    GOARCH=${TARGETARCH}
 
 WORKDIR /build
 COPY go.mod .
